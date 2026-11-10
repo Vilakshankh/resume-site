@@ -56,6 +56,7 @@
   --radius-xl: calc(var(--radius) * 1.4);
 
   --shadow-card: 0 0 4px 0 rgb(0 0 0 / 0.04), 0 4px 8px 0 rgb(0 0 0 / 0.06), 0 0 0 1px rgb(0 0 0 / 0.05);
+  --spacing-nav: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 
   --animate-marquee: marquee 30s linear infinite;
   @keyframes marquee {
@@ -67,6 +68,11 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html,
+  body,
+  #root {
+    @apply h-full overflow-hidden overscroll-none;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;

@@ -15,7 +15,7 @@ export function SkillNav({ activeSkill, selected, onSelect }: SkillNavProps) {
       orientation="vertical"
       value={activeSkill ? [activeSkill] : []}
       onValueChange={value => onSelect(value[0] ?? null)}
-      className="w-full gap-0"
+      className="w-fit gap-0"
     >
       {SKILLS.map(skill => {
         const active = activeSkill === skill.name;
@@ -30,6 +30,7 @@ export function SkillNav({ activeSkill, selected, onSelect }: SkillNavProps) {
                     'group h-auto w-full justify-between gap-3 rounded-none border-l-2 border-l-transparent py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50',
                     related && 'border-l-neutral-300',
                     active && 'border-l-neutral-950',
+                    selected && !related && 'opacity-40 hover:opacity-100 focus-visible:opacity-100',
                   )}
                 />
               }

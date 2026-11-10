@@ -27,16 +27,18 @@ export function Chips({ experience }: { experience: Experience }) {
 type ExperienceCardProps = {
   experience: Experience;
   selected: boolean;
+  highlighted?: boolean;
   onSelect: () => void;
   ref?: Ref<HTMLButtonElement>;
 };
 
-export function ExperienceCard({ experience, selected, onSelect, ref }: ExperienceCardProps) {
+export function ExperienceCard({ experience, selected, highlighted = selected, onSelect, ref }: ExperienceCardProps) {
   return (
     <Card
       className={cn(
-        'shrink-0 gap-0 rounded-none bg-transparent py-0 ring-0 transition-shadow hover:shadow-card',
-        selected && 'shadow-card',
+        'shrink-0 gap-0 rounded-none bg-transparent py-0 ring-0 transition-[box-shadow,opacity] hover:shadow-card',
+        highlighted && 'shadow-card',
+        !highlighted && 'opacity-40 hover:opacity-100 focus-within:opacity-100',
       )}
     >
       <button

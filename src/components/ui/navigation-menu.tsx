@@ -5,11 +5,12 @@ import { ChevronDownIcon } from "lucide-react"
 
 function NavigationMenu({
   align = "start",
+  side = "bottom",
   className,
   children,
   ...props
 }: NavigationMenuPrimitive.Root.Props &
-  Pick<NavigationMenuPrimitive.Positioner.Props, "align">) {
+  Pick<NavigationMenuPrimitive.Positioner.Props, "align" | "side">) {
   return (
     <NavigationMenuPrimitive.Root
       data-slot="navigation-menu"
@@ -20,7 +21,7 @@ function NavigationMenu({
       {...props}
     >
       {children}
-      <NavigationMenuPositioner align={align} />
+      <NavigationMenuPositioner align={align} side={side} />
     </NavigationMenuPrimitive.Root>
   )
 }
@@ -107,7 +108,7 @@ function NavigationMenuPositioner({
         align={align}
         alignOffset={alignOffset}
         className={cn(
-          "isolate z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) transition-[top,left,right,bottom] duration-[0.35s] ease-[cubic-bezier(0.22,1,0.36,1)] data-instant:transition-none data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0",
+          "isolate z-50 h-(--positioner-height) w-(--positioner-width) max-w-(--available-width) transition-[top,left,right,bottom] duration-[0.35s] ease-[cubic-bezier(0.22,1,0.36,1)] data-instant:transition-none before:absolute before:content-[''] data-[side=bottom]:before:top-[-10px] data-[side=bottom]:before:right-0 data-[side=bottom]:before:left-0 data-[side=bottom]:before:h-2.5 data-[side=top]:before:right-0 data-[side=top]:before:bottom-[-10px] data-[side=top]:before:left-0 data-[side=top]:before:h-2.5",
           className
         )}
         {...props}

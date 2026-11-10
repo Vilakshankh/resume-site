@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { Eye } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import Markdown, { type Components } from 'react-markdown';
 import backseatFiles from '../projects/backseat-files.md?raw';
 import studio555 from '../projects/555-studio.md?raw';
 import { cn } from '@/lib/utils';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { Accordion } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { COLUMN_DIVIDER_CLASS, Column } from './SkillTree';
+import { COLUMN_DIVIDER_CLASS, Column, MobileSection } from './SkillTree';
 
 const PROJECTS = ['Backseat Files', '555 Studio', 'The Butterfly Project', 'Tecnishe'];
+const HIDDEN_PROJECTS = new Set(['The Butterfly Project', 'Tecnishe']);
+
+type ProjectSection = 'project' | 'media';
 
 type ProjectMedia = {
   type: 'video' | 'image';
@@ -19,15 +24,6 @@ type ProjectMedia = {
   alt?: string;
 };
 
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
-
 const PROJECT_MEDIA: Record<string, ProjectMedia[]> = {
   'Backseat Files': [
     { type: 'video', src: '/projects/backseat-files.mp4', width: 1080, height: 1920 },
@@ -35,15 +31,13 @@ const PROJECT_MEDIA: Record<string, ProjectMedia[]> = {
   ],
   '555 Studio': [
     { type: 'image', src: '/projects/555-studio/logo.png', width: 819, height: 1024, alt: '555 chrome oval logo on black' },
+    { type: 'image', src: '/projects/555-studio/event-talk.jpg', width: 1024, height: 682, alt: 'Speaker smiling in front of a projected question' },
+    { type: 'image', src: '/projects/555-studio/event-room.jpg', width: 1024, height: 768, alt: 'Crowded room listening to a talk' },
+    { type: 'image', src: '/projects/555-studio/event-speaker.jpg', width: 1024, height: 576, alt: 'Speaker presenting beside a screen about chat-style AI' },
+    { type: 'image', src: '/projects/555-studio/event-group.jpg', width: 1024, height: 682, alt: 'Group photo of event attendees' },
     { type: 'image', src: '/projects/555-studio/jersey.png', width: 819, height: 1024, alt: '555 jersey with leopard-print side panels' },
     { type: 'image', src: '/projects/555-studio/ipod.jpg', width: 819, height: 1024, alt: 'Back of a scratched iPod engraved with the 555 logo' },
     { type: 'image', src: '/projects/555-studio/record.jpg', width: 819, height: 1024, alt: '555 record sleeve reading A Creative Experimentation Studio' },
-    ...shuffle<ProjectMedia>([
-      { type: 'image', src: '/projects/555-studio/event-talk.jpg', width: 1024, height: 682, alt: 'Speaker smiling in front of a projected question' },
-      { type: 'image', src: '/projects/555-studio/event-room.jpg', width: 1024, height: 768, alt: 'Crowded room listening to a talk' },
-      { type: 'image', src: '/projects/555-studio/event-speaker.jpg', width: 1024, height: 576, alt: 'Speaker presenting beside a screen about chat-style AI' },
-      { type: 'image', src: '/projects/555-studio/event-group.jpg', width: 1024, height: 682, alt: 'Group photo of event attendees' },
-    ]),
   ],
 };
 
@@ -55,7 +49,7 @@ const PROJECT_CONTENT: Record<string, string> = {
 const MARKDOWN_COMPONENTS: Components = {
   h1: ({ children }) => <h3 className="text-lg font-medium text-neutral-950">{children}</h3>,
   h2: ({ children }) => (
-    <h4 className="mt-3 text-xs font-medium text-neutral-500">{children}</h4>
+    <h3 className="mt-6 text-lg font-medium text-neutral-950 first:mt-0">{children}</h3>
   ),
   p: ({ children }) => <p className="text-sm leading-relaxed text-neutral-700">{children}</p>,
   blockquote: ({ children }) => (
@@ -87,77 +81,160 @@ const MARKDOWN_COMPONENTS: Components = {
   ),
 };
 
+function ProjectNav({
+  selected,
+  onSelect,
+}: {
+  selected: string;
+  onSelect: (project: string) => void;
+}) {
+  return (
+    <ToggleGroup
+      orientation="vertical"
+      value={[selected]}
+      onValueChange={value => value[0] && onSelect(value[0])}
+      className="w-fit gap-0"
+    >
+      {PROJECTS.map(project => {
+        if (HIDDEN_PROJECTS.has(project)) {
+          return (
+            <div
+              key={project}
+              className="flex h-auto w-full cursor-default items-center justify-start gap-2 rounded-none py-2 pr-0 pl-2.5"
+            >
+              <EyeOff aria-hidden className="size-3.5 shrink-0 text-neutral-950 opacity-40" />
+              <span className="text-sm text-neutral-500">{project}</span>
+            </div>
+          );
+        }
+
+        return (
+          <ToggleGroupItem
+            key={project}
+            value={project}
+            className="group h-auto w-full justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
+          >
+            <Eye
+              aria-hidden
+              className="size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
+            />
+            <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
+              {project}
+            </span>
+          </ToggleGroupItem>
+        );
+      })}
+    </ToggleGroup>
+  );
+}
+
+function ProjectMediaGallery({ project }: { project: string }) {
+  return (
+    <section aria-label={`${project} images`} className="flex flex-col">
+      {PROJECT_MEDIA[project]?.map(media =>
+        media.type === 'video' ? (
+          <video
+            key={media.src}
+            src={media.src}
+            autoPlay
+            muted
+            loop
+            playsInline
+            style={{ aspectRatio: `${media.width} / ${media.height}` }}
+            className="w-full shrink-0"
+          />
+        ) : (
+          <img
+            key={media.src}
+            src={media.src}
+            alt={media.alt ?? ''}
+            width={media.width}
+            height={media.height}
+            className="h-auto w-full shrink-0"
+          />
+        ),
+      )}
+    </section>
+  );
+}
+
+function ProjectCopy({ project }: { project: string }) {
+  const content = PROJECT_CONTENT[project];
+  if (!content) return null;
+
+  return (
+    <article className="flex flex-col gap-4">
+      <Markdown components={MARKDOWN_COMPONENTS}>{content}</Markdown>
+    </article>
+  );
+}
+
 export function Projects({ className }: { className?: string }) {
+  const isDesktop = useMediaQuery('(min-width: 64rem)');
   const [selected, setSelected] = useState(PROJECTS[0]);
+  const [openSection, setOpenSection] = useState<ProjectSection | null>('project');
+
+  const mediaCount = PROJECT_MEDIA[selected]?.length ?? 0;
+  const mediaSummary = mediaCount === 0 ? 'None' : `${mediaCount} item${mediaCount === 1 ? '' : 's'}`;
+
+  function selectProject(project: string) {
+    setSelected(project);
+    setOpenSection('media');
+  }
+
+  const projectNav = <ProjectNav selected={selected} onSelect={selectProject} />;
+
+  if (!isDesktop) {
+    return (
+      <div className={cn('overflow-y-auto px-3 pb-nav', className)}>
+        <Accordion
+          value={openSection ? [openSection] : []}
+          onValueChange={value => setOpenSection((value[0] as ProjectSection | undefined) ?? null)}
+        >
+          <MobileSection value="project" label="Project" summary={selected}>
+            {projectNav}
+          </MobileSection>
+          <MobileSection value="media" label="Media" summary={mediaSummary}>
+            <ProjectMediaGallery project={selected} />
+          </MobileSection>
+        </Accordion>
+        {PROJECT_CONTENT[selected] && (
+          <div className="pt-8">
+            <ProjectCopy project={selected} />
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
       className={cn(
-        'grid grid-cols-1 gap-y-6 overflow-y-auto lg:grid-cols-[15rem_auto_minmax(0,0.7fr)_auto_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-x-8 lg:overflow-visible',
+        'grid grid-cols-[15rem_auto_minmax(0,0.7fr)_auto_minmax(0,1fr)] grid-rows-[minmax(0,1fr)] gap-x-8',
         className,
       )}
     >
       <Column label="Project">
-        <ToggleGroup
-          orientation="vertical"
-          value={[selected]}
-          onValueChange={value => value[0] && setSelected(value[0])}
-          className="w-full gap-0"
-        >
-          {PROJECTS.map(project => (
-            <ToggleGroupItem
-              key={project}
-              value={project}
-              className="group h-auto w-full justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
-            >
-              <Eye
-                aria-hidden
-                className="size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
-              />
-              <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
-                {project}
-              </span>
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pr-3 pb-nav">
+          <ProjectNav selected={selected} onSelect={setSelected} />
+        </div>
       </Column>
 
-      <Separator orientation="vertical" className={cn('hidden lg:block', COLUMN_DIVIDER_CLASS)} />
+      <Separator orientation="vertical" className={COLUMN_DIVIDER_CLASS} />
 
-      <section aria-label={`${selected} images`} className="flex min-h-64 flex-col lg:-mx-8 lg:min-h-0 lg:overflow-y-auto">
-        {PROJECT_MEDIA[selected]?.map(media =>
-          media.type === 'video' ? (
-            <video
-              key={media.src}
-              src={media.src}
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{ aspectRatio: `${media.width} / ${media.height}` }}
-              className="w-full shrink-0"
-            />
-          ) : (
-            <img
-              key={media.src}
-              src={media.src}
-              alt={media.alt ?? ''}
-              width={media.width}
-              height={media.height}
-              className="h-auto w-full shrink-0"
-            />
-          ),
-        )}
+      <section
+        aria-label={`${selected} images`}
+        className="flex min-h-0 flex-col overflow-y-auto pb-nav lg:-mx-8"
+      >
+        <ProjectMediaGallery project={selected} />
       </section>
 
-      <Separator orientation="vertical" className={cn('hidden lg:block', COLUMN_DIVIDER_CLASS)} />
+      <Separator orientation="vertical" className={COLUMN_DIVIDER_CLASS} />
 
       <ScrollArea className="min-h-0">
-        {PROJECT_CONTENT[selected] && (
-          <article className="flex flex-col gap-4 pr-3">
-            <Markdown components={MARKDOWN_COMPONENTS}>{PROJECT_CONTENT[selected]}</Markdown>
-          </article>
-        )}
+        <div className="pr-3 pb-nav">
+          <ProjectCopy project={selected} />
+        </div>
       </ScrollArea>
     </div>
   );

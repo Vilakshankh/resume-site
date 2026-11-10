@@ -41,14 +41,14 @@ export function Column({ label, badge, actions, children }: ColumnProps) {
   );
 }
 
-type SectionProps = {
-  value: Section;
+type MobileSectionProps = {
+  value: string;
   label: string;
   summary?: string;
   children: ReactNode;
 };
 
-function MobileSection({ value, label, summary, children }: SectionProps) {
+export function MobileSection({ value, label, summary, children }: MobileSectionProps) {
   return (
     <AccordionItem value={value} className="border-none">
       <AccordionTrigger className="items-center gap-3 rounded-none py-3 hover:no-underline">
@@ -60,8 +60,8 @@ function MobileSection({ value, label, summary, children }: SectionProps) {
   );
 }
 
-// Bleeds through Home's <main> padding (top) and the nav row + padding (bottom).
-export const COLUMN_DIVIDER_CLASS = '-mt-6 -mb-9 bg-neutral-200';
+// Bleeds through Home's <main> padding so column rules meet the viewport edges.
+export const COLUMN_DIVIDER_CLASS = '-mt-6 -mb-6 bg-neutral-200';
 
 const ARROW_CLASS =
   'rounded border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:bg-transparent hover:text-neutral-900';
@@ -114,6 +114,7 @@ export function SkillTree({ className }: { className?: string }) {
     <ExperiencePanel
       experiences={visible}
       selectedId={selected?.id}
+      highlightAll={!!activeSkill}
       onSelect={selectExperience}
       query={query}
       onQueryChange={setQuery}
@@ -124,7 +125,7 @@ export function SkillTree({ className }: { className?: string }) {
 
   if (!isDesktop) {
     return (
-      <div className={cn('overflow-y-auto px-3', className)}>
+      <div className={cn('overflow-y-auto px-3 pb-nav', className)}>
         <Accordion
           value={openSection ? [openSection] : []}
           onValueChange={value => setOpenSection((value[0] as Section | undefined) ?? null)}
@@ -136,7 +137,7 @@ export function SkillTree({ className }: { className?: string }) {
             {experiencePanel}
           </MobileSection>
         </Accordion>
-        {detail && <div className="py-4">{detail}</div>}
+        {detail && <div className="pt-8">{detail}</div>}
       </div>
     );
   }
@@ -149,9 +150,9 @@ export function SkillTree({ className }: { className?: string }) {
       )}
     >
       <Column label="Skill">
-        <ScrollArea className="min-h-0 flex-1">
-          <div className="pr-3">{skillNav}</div>
-        </ScrollArea>
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pr-3 pb-nav">
+          {skillNav}
+        </div>
       </Column>
 
       <Separator orientation="vertical" className={COLUMN_DIVIDER_CLASS} />
@@ -196,7 +197,7 @@ export function SkillTree({ className }: { className?: string }) {
       <Separator orientation="vertical" className={COLUMN_DIVIDER_CLASS} />
 
       <ScrollArea className="min-h-0">
-        <div className="pr-3">{detail}</div>
+        <div className="pr-3 pb-nav">{detail}</div>
       </ScrollArea>
     </div>
   );

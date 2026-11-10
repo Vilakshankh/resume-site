@@ -126,7 +126,7 @@ export function Faq({ className }: { className?: string }) {
     <section
       aria-label="Frequently asked questions"
       className={cn(
-        'grid grid-cols-2 gap-0.5 overflow-y-auto md:grid-cols-4 md:grid-rows-4 md:overflow-visible',
+        'grid grid-cols-2 gap-0.5 overflow-y-auto pb-nav md:grid-cols-4 md:grid-rows-4 md:overflow-visible',
         className,
       )}
     >

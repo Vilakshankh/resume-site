@@ -8,6 +8,7 @@ import { ExperienceCard } from './ExperienceCard';
 type ExperiencePanelProps = {
   experiences: Experience[];
   selectedId: string | undefined;
+  highlightAll?: boolean;
   onSelect: (id: string) => void;
   query: string;
   onQueryChange: (query: string) => void;
@@ -16,6 +17,7 @@ type ExperiencePanelProps = {
 export function ExperiencePanel({
   experiences,
   selectedId,
+  highlightAll = false,
   onSelect,
   query,
   onQueryChange,
@@ -44,7 +46,7 @@ export function ExperiencePanel({
       </InputGroup>
 
       <ScrollArea className="-m-2 min-h-0 flex-1">
-        <div className="flex flex-col gap-2.5 p-2">
+        <div className="flex flex-col gap-2.5 p-2 pb-nav">
           {experiences.length === 0 ? (
             <p className="py-6 text-sm text-neutral-400">No matching experiences.</p>
           ) : (
@@ -53,6 +55,7 @@ export function ExperiencePanel({
                 key={exp.id}
                 experience={exp}
                 selected={exp.id === selectedId}
+                highlighted={highlightAll || exp.id === selectedId}
                 onSelect={() => onSelect(exp.id)}
                 ref={node => {
                   if (node) cardRefs.current.set(exp.id, node);
