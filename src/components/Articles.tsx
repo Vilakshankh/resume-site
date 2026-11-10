@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Accordion } from '@/components/ui/accordion';
 import {
@@ -19,6 +20,12 @@ import { WritingView } from './Writing';
 
 const ARTICLES = [...WRITING].sort((a, b) => b.date.localeCompare(a.date));
 
+function articleFromHash(hash: string) {
+  const { section, item } = parseHash(hash);
+  if (section !== 'articles' || !item) return undefined;
+  return ARTICLES.some(article => article.slug === item) ? item : undefined;
+}
+
 function ArticleNav({
   selected,
   onSelect,
@@ -31,19 +38,19 @@ function ArticleNav({
       orientation="vertical"
       value={[selected]}
       onValueChange={value => value[0] && onSelect(value[0])}
-      className="w-fit gap-0"
+      className="w-full gap-0"
     >
       {ARTICLES.map(article => (
         <ToggleGroupItem
           key={article.slug}
           value={article.slug}
-          className="group h-auto w-full items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
+          className="group h-auto w-full items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal opacity-40 transition-opacity hover:bg-transparent hover:opacity-100 aria-pressed:bg-neutral-50 aria-pressed:opacity-100"
         >
           <Eye
             aria-hidden
             className="mt-0.5 size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
           />
-          <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
+          <span className="text-sm font-medium text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:text-neutral-950">
             {article.title}
           </span>
         </ToggleGroupItem>
@@ -83,11 +90,22 @@ function ArticleCopy({
 
 export function Articles({ className }: { className?: string }) {
   const isDesktop = useMediaQuery('(min-width: 64rem)');
-  const [selectedSlug, setSelectedSlug] = useState(ARTICLES[0]?.slug ?? '');
+  const hash = useHash();
+  const [selectedSlug, setSelectedSlug] = useState(
+    () => articleFromHash(window.location.hash) ?? ARTICLES[0]?.slug ?? '',
+  );
   const [openSection, setOpenSection] = useState<string | null>('article');
   const selected = ARTICLES.find(article => article.slug === selectedSlug) ?? ARTICLES[0];
   const topRef = useRef<HTMLElement>(null);
   const skipScroll = useRef(true);
+
+  useEffect(() => {
+    const slug = articleFromHash(hash);
+    if (slug) {
+      setSelectedSlug(slug);
+      setOpenSection(null);
+    }
+  }, [hash]);
 
   useEffect(() => {
     if (skipScroll.current) {

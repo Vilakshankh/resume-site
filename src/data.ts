@@ -18,7 +18,7 @@ export type Experience = {
 };
 
 export const SKILLS: Skill[] = [
-  { name: 'Product Design', ids: ['draftaid', 'trails', 'matrox', 'tecnishe', 'butterfly', 'mentic'] },
+  { name: 'Product Design', ids: ['trails', 'draftaid', 'matrox', 'tecnishe', 'butterfly', 'mentic'] },
   { name: 'UI/UX', ids: ['draftaid', 'trails', 'matrox', 'tecnishe', 'butterfly', 'mentic'] },
   { name: 'Branding', ids: ['s555', 'draftaid', 'nucliq'] },
   { name: 'Front End Vibe Coding', ids: ['s555', 'trails', 'tecnishe'] },

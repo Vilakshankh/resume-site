@@ -1,9 +1,12 @@
-import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowUpRight, Eye, EyeOff } from 'lucide-react';
 import Markdown, { type Components } from 'react-markdown';
 import backseatFiles from '../projects/backseat-files.md?raw';
 import studio555 from '../projects/555-studio.md?raw';
+import frenchTranscription from '../projects/french-transcription.md?raw';
+import designToolsWithAi from '../projects/design-tools-with-ai.md?raw';
 import { cn } from '@/lib/utils';
+import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Accordion } from '@/components/ui/accordion';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -11,8 +14,20 @@ import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { COLUMN_DIVIDER_CLASS, Column, MobileSection } from './SkillTree';
 
-const PROJECTS = ['Backseat Files', '555 Studio', 'The Butterfly Project', 'Tecnishe'];
+const PROJECTS = [
+  'Backseat Files',
+  '555 Studio',
+  'Design Tools with AI',
+  'French Transcription',
+  'The Butterfly Project',
+  'Tecnishe',
+];
 const HIDDEN_PROJECTS = new Set(['The Butterfly Project', 'Tecnishe']);
+const PROJECT_LINKS: Record<string, string> = {
+  'Design Tools with AI': 'https://draftaid-gen-art.vercel.app/#axis',
+  '555 Studio': 'https://www.555-studio.com/',
+  'French Transcription': 'https://github.com/Vilakshankh/French-Transcription',
+};
 
 type ProjectSection = 'project' | 'media';
 
@@ -25,6 +40,20 @@ type ProjectMedia = {
 };
 
 const PROJECT_MEDIA: Record<string, ProjectMedia[]> = {
+  'Design Tools with AI': [
+    {
+      type: 'video',
+      src: '/projects/design-tools-with-ai/screen-recording.mp4',
+      width: 900,
+      height: 720,
+    },
+    {
+      type: 'video',
+      src: '/projects/design-tools-with-ai/draftaid-ripple.mp4',
+      width: 720,
+      height: 720,
+    },
+  ],
   'Backseat Files': [
     { type: 'video', src: '/projects/backseat-files.mp4', width: 1080, height: 1920 },
     { type: 'video', src: '/projects/backseat-files-2.mp4', width: 1148, height: 934 },
@@ -39,11 +68,16 @@ const PROJECT_MEDIA: Record<string, ProjectMedia[]> = {
     { type: 'image', src: '/projects/555-studio/ipod.jpg', width: 819, height: 1024, alt: 'Back of a scratched iPod engraved with the 555 logo' },
     { type: 'image', src: '/projects/555-studio/record.jpg', width: 819, height: 1024, alt: '555 record sleeve reading A Creative Experimentation Studio' },
   ],
+  'French Transcription': [
+    { type: 'video', src: '/projects/french-transcription/demo.mp4', width: 1058, height: 720 },
+  ],
 };
 
 const PROJECT_CONTENT: Record<string, string> = {
+  'Design Tools with AI': designToolsWithAi,
   'Backseat Files': backseatFiles,
   '555 Studio': studio555,
+  'French Transcription': frenchTranscription,
 };
 
 const MARKDOWN_COMPONENTS: Components = {
@@ -108,20 +142,34 @@ function ProjectNav({
           );
         }
 
+        const link = PROJECT_LINKS[project];
+
         return (
-          <ToggleGroupItem
-            key={project}
-            value={project}
-            className="group h-auto w-full items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
-          >
-            <Eye
-              aria-hidden
-              className="mt-0.5 size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
-            />
-            <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
-              {project}
-            </span>
-          </ToggleGroupItem>
+          <div key={project} className="flex items-start gap-1">
+            <ToggleGroupItem
+              value={project}
+              className="group h-auto min-w-0 flex-1 items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
+            >
+              <Eye
+                aria-hidden
+                className="mt-0.5 size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
+              />
+              <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
+                {project}
+              </span>
+            </ToggleGroupItem>
+            {link && (
+              <a
+                href={link}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`Open ${project} website`}
+                className="mt-2.5 shrink-0 text-neutral-400 transition-colors hover:text-neutral-950"
+              >
+                <ArrowUpRight aria-hidden className="size-3.5" />
+              </a>
+            )}
+          </div>
         );
       })}
     </ToggleGroup>
@@ -158,21 +206,61 @@ function ProjectMediaGallery({ project }: { project: string }) {
   );
 }
 
+function projectLinkLabel(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
 function ProjectCopy({ project }: { project: string }) {
   const content = PROJECT_CONTENT[project];
+  const link = PROJECT_LINKS[project];
   if (!content) return null;
 
   return (
     <article className="flex flex-col gap-4">
+      {link && (
+        <a
+          href={link}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-fit items-center gap-1 text-sm text-neutral-900 underline decoration-neutral-300 underline-offset-2 hover:decoration-neutral-900"
+        >
+          {projectLinkLabel(link)}
+          <ArrowUpRight aria-hidden className="size-3.5" />
+        </a>
+      )}
       <Markdown components={MARKDOWN_COMPONENTS}>{content}</Markdown>
     </article>
   );
 }
 
+function projectSlug(name: string) {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
+
+function projectFromHash(hash: string) {
+  const { section, item } = parseHash(hash);
+  if (section !== 'projects' || !item) return undefined;
+  const project = PROJECTS.find((name) => name === item || projectSlug(name) === item.toLowerCase());
+  return project && !HIDDEN_PROJECTS.has(project) ? project : undefined;
+}
+
 export function Projects({ className }: { className?: string }) {
   const isDesktop = useMediaQuery('(min-width: 64rem)');
-  const [selected, setSelected] = useState(PROJECTS[0]);
+  const hash = useHash();
+  const [selected, setSelected] = useState(() => projectFromHash(window.location.hash) ?? PROJECTS[0]);
   const [openSection, setOpenSection] = useState<ProjectSection | null>('project');
+
+  useEffect(() => {
+    const project = projectFromHash(hash);
+    if (project) {
+      setSelected(project);
+      setOpenSection('media');
+    }
+  }, [hash]);
 
   const mediaCount = PROJECT_MEDIA[selected]?.length ?? 0;
   const mediaSummary = mediaCount === 0 ? 'None' : `${mediaCount} item${mediaCount === 1 ? '' : 's'}`;

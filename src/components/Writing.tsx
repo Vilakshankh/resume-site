@@ -22,7 +22,7 @@ export function WritingCards({ writings, onOpen }: { writings: Writing[]; onOpen
       <h4 className="text-lg font-medium text-neutral-950">Articles</h4>
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         {writings.map(writing => {
-          const thumbnail = writing.cover.poster ?? writing.cover.src;
+          const thumbnail = writing.cover?.poster ?? writing.cover?.src;
 
           return (
             <Card
@@ -39,12 +39,14 @@ export function WritingCards({ writings, onOpen }: { writings: Writing[]; onOpen
               }}
               className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
             >
-              <img
-                src={thumbnail}
-                alt={writing.cover.alt}
-                loading="lazy"
-                className="aspect-video w-full object-cover"
-              />
+              {thumbnail && writing.cover && (
+                <img
+                  src={thumbnail}
+                  alt={writing.cover.alt}
+                  loading="lazy"
+                  className="aspect-video w-full object-cover"
+                />
+              )}
               <CardHeader>
                 <CardTitle>{writing.title}</CardTitle>
                 <CardDescription>{formatWritingDate(writing.date)}</CardDescription>

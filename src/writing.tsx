@@ -1,17 +1,19 @@
 import type { ReactNode } from 'react';
 import { ExternalLink } from 'lucide-react';
 
+export type WritingCover = { src: string; poster?: string; alt: string };
+
 export type Writing = {
   slug: string;
   title: string;
   description: string;
   date: string;
   experienceId?: string;
-  cover: { src: string; poster?: string; alt: string };
+  cover?: WritingCover;
   body: ReactNode;
 };
 
-function Film({ src, poster, alt }: Writing['cover']) {
+function Film({ src, poster, alt }: WritingCover) {
   return (
     <video
       src={src}
@@ -96,6 +98,344 @@ const SYNTRA = {
 };
 
 export const WRITING: Writing[] = [
+  {
+    slug: 'design-jigs',
+    title: 'design jigs: why designers should build their own tools',
+    description:
+      'AI is not the thing that designs for you. it is the thing that lets you build your own jigs — small custom tools that fit your exact process.',
+    date: '2026-11-10',
+    body: (
+      <>
+        <Section>
+          <p>
+            woodworkers have this thing called a jig. it&apos;s a little custom tool you build so you can make the same
+            precise cut over and over without measuring every time. nobody sells it to you. you make it for the exact
+            thing you&apos;re building.
+          </p>
+          <p>
+            i&apos;ve started thinking about AI the same way. not as the thing that designs for me, but as the thing that
+            lets me build my own jigs.
+          </p>
+        </Section>
+        <Section title="the tools were never made for you">
+          <p>
+            every design tool is built for the average designer doing the average task. that&apos;s how software works. it
+            has to fit millions of people, so it fits nobody perfectly.
+          </p>
+          <p>
+            so we bend our process around the tool. we do the same 12 clicks to export assets. we rename layers by hand.
+            we rebuild the same handoff doc every project. we accept it because the alternative used to be &quot;learn to
+            code and build a plugin,&quot; and who has time for that.
+          </p>
+          <p>that&apos;s changed.</p>
+        </Section>
+        <Section title="what a design jig looks like">
+          <p>
+            a jig is small. it does one thing. it fits <em>your</em> workflow, not everyone&apos;s. for draftaid, whose
+            brand lives in engineering drawings — GD&amp;T symbols, axes, grids, isometric parts — i&apos;ve been building
+            generative jigs instead of redrawing every asset by hand:
+          </p>
+          <ul>
+            <li>
+              a <strong>symbol grid</strong> that arranges CAD and GD&amp;T marks by seed, perlin noise, and palette
+            </li>
+            <li>
+              a <strong>pixel shape</strong> jig that breaks part silhouettes into symbol-filled cells with motion
+              controls
+            </li>
+            <li>
+              a <strong>hero</strong> builder where marketing copy and a generative brand field live in the same panel
+            </li>
+            <li>
+              an <strong>axis view</strong> that draws isometric / orthographic parts with seed, mirror, edges, and
+              svg/png export
+            </li>
+            <li>
+              adjacent experiments — showreel, tetris, integrations, puzzle, data sphere, iso — all wired to the same
+              visual vocabulary
+            </li>
+          </ul>
+          <p>
+            every view exposes the parameters that would otherwise stay buried in code: seeds, density, noise, color,
+            export. change a slider, get a new on-brand asset. copy the parameters, get the same result again.
+          </p>
+          <p>
+            none of these are products. none of them would make sense to sell as-is. that&apos;s the point. they&apos;re
+            mine — tuned to one brand&apos;s rules so every output stays on-system.
+          </p>
+        </Section>
+        <Section title='why this matters more than "AI design"'>
+          <p>
+            most of the conversation about AI in design is about generation. make me a logo, make me a landing page. and
+            that&apos;s exactly where the mediocre stuff comes from, because you&apos;re asking a general tool to make a
+            specific thing.
+          </p>
+          <p>
+            jigs flip that. you keep the taste and the decisions. the tool takes the repetitive part. you&apos;re not
+            outsourcing the cut, you&apos;re making the cut more precise and repeatable.
+          </p>
+          <p>
+            <strong>AI is a tool to go from idea to reality faster.</strong> jigs are the most literal version of that.
+          </p>
+        </Section>
+        <Section title="when everyone builds their own tools">
+          <p>
+            here&apos;s the part i find really interesting. if every designer can build tools that fit their exact
+            process, then process itself becomes a form of craft again.
+          </p>
+          <p>
+            two designers with the same software will work completely differently, because their jigs are different. your
+            toolkit starts to say something about how you think. the way you&apos;ve set up your systems becomes part of
+            your taste.
+          </p>
+          <p>
+            that&apos;s a shift. for a long time, the tool shaped the designer. now the designer gets to shape the tool.
+          </p>
+        </Section>
+        <Section title="how to start">
+          <p>you don&apos;t need to be technical. start here:</p>
+          <ol>
+            <li>
+              <strong>notice the repeat.</strong> for one week, write down anything you do more than twice. that&apos;s
+              your jig list.
+            </li>
+            <li>
+              <strong>pick the most annoying one.</strong> not the biggest. the most annoying. motivation matters.
+            </li>
+            <li>
+              <strong>describe it to an AI like you&apos;d explain it to an intern.</strong> what goes in, what comes out,
+              what the rules are.
+            </li>
+            <li>
+              <strong>keep it ugly.</strong> a jig doesn&apos;t need a nice UI. it needs to work.
+            </li>
+            <li>
+              <strong>save it somewhere you&apos;ll find it.</strong> a folder of jigs is a toolkit. a toolkit compounds.
+            </li>
+          </ol>
+          <p>
+            the designers who win the next few years won&apos;t be the ones who generate the most. they&apos;ll be the
+            ones who built the best workshop.
+          </p>
+        </Section>
+      </>
+    ),
+  },
+  {
+    slug: 'generative-branding',
+    title: 'generative branding: brand systems that keep up with startups',
+    description:
+      'startups ship faster than static brands can follow. generative branding means designing the system instead of the outputs.',
+    date: '2026-11-10',
+    body: (
+      <>
+        <Section>
+          <p>
+            startups can&apos;t slow down. that&apos;s not a flaw, it&apos;s the deal. you ship, you learn, you ship
+            again.
+          </p>
+          <p>
+            the problem is brands are usually built like they&apos;re for companies that <em>can</em> slow down. a big
+            identity project, a 60 page guidelines PDF, a designer who has to touch every asset. then the startup grows
+            faster than the brand can follow, and things start to drift. the deck looks different from the site. the site
+            looks different from the ads. every new hire makes their own version.
+          </p>
+          <p>
+            that&apos;s how a brand goes mediocre. not in one bad decision, but in a thousand small inconsistent ones.
+          </p>
+        </Section>
+        <Section title="what generative branding is">
+          <p>
+            generative branding means designing the <strong>system</strong> instead of the outputs.
+          </p>
+          <p>
+            instead of a fixed logo and a set of templates, you define rules: how type scales, how color combines, how
+            layouts are built, how a shape can move or change. then those rules generate the assets. sometimes by code,
+            sometimes by AI, sometimes by a person following a really clear system.
+          </p>
+          <p>
+            the brand stops being a set of files and becomes a set of decisions that keep making themselves.
+          </p>
+          <p>
+            some well known examples of this thinking: identities with logos that change based on data or context, type
+            systems that respond to content, visual languages built from a grid or algorithm so every new piece feels
+            related without being identical.
+          </p>
+        </Section>
+        <Section title="why it fits startups">
+          <p>
+            a static brand asks: &quot;what does it look like?&quot;
+            <br />
+            a generative brand asks: &quot;how does it behave?&quot;
+          </p>
+          <p>
+            that second question is way more useful when you&apos;re moving fast. because you don&apos;t know what
+            you&apos;ll need in six months. new product, new market, new channel. a system can stretch to meet that. a
+            template can&apos;t.
+          </p>
+          <p>
+            it also solves the speed vs. quality fight. the taste goes in once, at the system level, deeply. after that,
+            speed is cheap and the output stays on brand. you get to be slow where it matters and fast everywhere else.
+          </p>
+        </Section>
+        <Section title="what a brand system actually needs">
+          <p>you don&apos;t need a huge budget to start. you need a few things done really well:</p>
+          <ol>
+            <li>
+              <strong>a point of view.</strong> the system amplifies whatever idea is at the core. if there&apos;s no
+              idea, you just generate mediocre at scale. this is the part you can&apos;t skip.
+            </li>
+            <li>
+              <strong>tokens.</strong> colors, type, spacing, radius, motion, all named and defined. this is the
+              vocabulary.
+            </li>
+            <li>
+              <strong>rules.</strong> how tokens combine. what&apos;s allowed, what&apos;s never allowed. contrast,
+              hierarchy, proportions.
+            </li>
+            <li>
+              <strong>a few generators.</strong> the pieces that turn rules into outputs. a social post builder, a slide
+              system, a pattern or illustration logic.
+            </li>
+            <li>
+              <strong>room to break it.</strong> the best systems have a space for moments of pure craft, the hero
+              campaign, the launch, the thing people screenshot.
+            </li>
+          </ol>
+        </Section>
+        <Section title="how much does it take?">
+          <p>
+            less than you&apos;d think, more than a logo. the upfront investment is heavier than a quick identity,
+            because you&apos;re designing rules instead of outputs. but the cost per asset drops close to zero after that,
+            and so does the cost of inconsistency.
+          </p>
+          <p>
+            compare that to the hidden cost of rapid growth without a system: rebrands every 18 months, a design team that
+            only does production, and a brand that never builds trust because it never looks the same twice.
+          </p>
+        </Section>
+        <Section title="the bigger shift">
+          <p>
+            AI made it easy to generate anything. that&apos;s exactly why the system matters more now. generation without
+            rules is noise. generation inside a strong system is a brand that scales.
+          </p>
+          <p>
+            the designer&apos;s job isn&apos;t going away. it&apos;s moving up a level. we&apos;re not just making the
+            thing anymore. we&apos;re making the thing that makes the thing.
+          </p>
+        </Section>
+      </>
+    ),
+  },
+  {
+    slug: 'we-live-in-a-mediocre-world',
+    title: 'we live in a mediocre world',
+    description:
+      'AI did not create mediocrity. it just made it cheaper. how to stay a craftsperson when "good enough" ships free.',
+    date: '2026-11-10',
+    body: (
+      <>
+        <Section>
+          <p>
+            when i started designing i was obsessed with the process. every time i made something that gave <em>me</em>{' '}
+            an experience, i felt it in my chest. that was the whole point.
+          </p>
+          <p>
+            fast forward to looking for a job, getting a salary, sitting in the meetings. i realized something nobody
+            tells you in design school: most businesses don&apos;t actually think design is that important. not in a mean
+            way. it&apos;s just not the thing on fire.
+          </p>
+          <p>
+            startups make and burn cash fast. the priorities are sales, product market fit, raising the next round. design
+            is something you do on the way to those things. and when design is on the way to something else, &quot;good
+            enough&quot; wins every time.
+          </p>
+        </Section>
+        <Section title="speed ate the process">
+          <p>
+            we&apos;re so obsessed with rapid production that we can&apos;t afford to be slow anymore. you need that
+            design today. if you can&apos;t do it today, they&apos;ll make it with AI and be ok with how shallow it is.
+          </p>
+          <p>
+            and honestly? i get it. a founder with 14 months of runway isn&apos;t going to wait three weeks for a brand
+            exploration. they&apos;re going to ship the thing.
+          </p>
+          <p>but here&apos;s what i keep coming back to:</p>
+          <p>
+            <strong>AI didn&apos;t create mediocrity. it just made it cheaper.</strong>
+          </p>
+          <p>
+            mediocre design existed long before generative tools. stock templates, the same three SaaS landing pages,
+            gradients on gradients. AI just removed the last bit of friction. now mediocre is free and instant, so
+            it&apos;s everywhere.
+          </p>
+        </Section>
+        <Section title="what mediocre actually costs">
+          <p>the problem is mediocre isn&apos;t free. it just sends the bill later.</p>
+          <p>brands do three jobs for people:</p>
+          <ul>
+            <li>
+              <strong>navigation.</strong> helping people choose. this matters most in B2C, where there are a hundred
+              options and decisions happen in seconds.
+            </li>
+            <li>
+              <strong>reassurance.</strong> telling a buyer they made the right call. this matters most in B2B, where
+              deals are big, someone&apos;s reputation is on the line, and switching is painful.
+            </li>
+            <li>
+              <strong>engagement.</strong> making people identify with you. B2C leans on emotion and lifestyle here, B2B
+              leans on credibility and competence.
+            </li>
+          </ul>
+          <p>
+            mediocre design quietly fails all three. you don&apos;t stand out, so you don&apos;t get picked. you look
+            like everyone else, so buyers don&apos;t feel safe. and nobody identifies with a template.
+          </p>
+          <p>you never see the deal you lost because the site felt cheap. that&apos;s why it&apos;s so easy to ignore.</p>
+        </Section>
+        <Section title="so how do you stay a craftsperson?">
+          <p>
+            i&apos;m not totally sure yet. i&apos;m still figuring out how to navigate this market. but a few things i
+            believe right now:
+          </p>
+          <p>
+            <strong>1. quality is now defined by what you dream, not time spent.</strong> speed isn&apos;t the enemy. AI
+            can get me from idea to reality faster than ever. the shallow part isn&apos;t the tool, it&apos;s when nobody
+            had an idea worth making real in the first place. taste is the input now.
+          </p>
+          <p>
+            <strong>2. be slow where it counts.</strong> you can&apos;t be slow everywhere anymore. so pick the moments.
+            the core identity, the first impression, the thing people screenshot. go deep there and let systems handle the
+            rest.
+          </p>
+          <p>
+            <strong>3. build systems, not one-offs.</strong> if a business can&apos;t afford to slow down, give them
+            something that keeps quality high at speed. that&apos;s what brand systems are for.
+          </p>
+          <p>
+            <strong>4. talk about cost in their language.</strong> &quot;this looks better&quot; doesn&apos;t land with a
+            founder. &quot;this is costing you trust and conversion&quot; does.
+          </p>
+        </Section>
+        <Section title="art vs. a paycheck">
+          <p>there&apos;s a line i wrote in my notes a while ago that i still can&apos;t shake:</p>
+          <p>
+            <em>
+              you can make art for yourself, but when you create art to put food on the table, it&apos;s no longer art.
+            </em>
+          </p>
+          <p>
+            maybe that&apos;s true. but i don&apos;t think the answer is to stop caring. i think the answer is to get
+            really good at knowing <em>where</em> caring pays off, and protecting that part like your life depends on it.
+          </p>
+          <p>
+            because the world being mediocre isn&apos;t really a threat to designers with taste. it&apos;s the
+            opportunity.
+          </p>
+        </Section>
+      </>
+    ),
+  },
   {
     slug: 'trails-branding',
     title: 'Branding a legal startup - Trails',

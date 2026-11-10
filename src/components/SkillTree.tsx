@@ -1,6 +1,7 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -66,12 +67,27 @@ export const COLUMN_DIVIDER_CLASS = '-mt-6 -mb-6 bg-neutral-200';
 const ARROW_CLASS =
   'rounded border-neutral-200 text-neutral-500 hover:border-neutral-400 hover:bg-transparent hover:text-neutral-900';
 
+function experienceFromHash(hash: string) {
+  const { section, item } = parseHash(hash);
+  if (section !== 'skill-tree' || !item) return undefined;
+  return EXPERIENCES.some(exp => exp.id === item) ? item : undefined;
+}
+
 export function SkillTree({ className }: { className?: string }) {
   const isDesktop = useMediaQuery('(min-width: 64rem)');
+  const hash = useHash();
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedId, setSelectedId] = useState<string | undefined>(() => experienceFromHash(window.location.hash));
   const [openSection, setOpenSection] = useState<Section | null>('skill');
+
+  useEffect(() => {
+    const id = experienceFromHash(hash);
+    if (id) {
+      setSelectedId(id);
+      setOpenSection(null);
+    }
+  }, [hash]);
 
   const visible = useMemo(() => {
     const skillIds = activeSkill ? SKILLS.find(s => s.name === activeSkill)?.ids : null;

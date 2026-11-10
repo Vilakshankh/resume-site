@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ComponentType, type SVGProps } from 'react';
 import type { NavigationMenuRootActions } from '@base-ui/react/navigation-menu';
-import { Calendar } from 'lucide-react';
+import { ArrowUpRight, Calendar } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,6 +10,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { parseHash, useHash } from '@/hooks/use-hash';
 import { cn } from '@/lib/utils';
 import { Articles } from './Articles';
 import { Faq } from './Faq';
@@ -18,10 +19,10 @@ import { SkillTree } from './SkillTree';
 
 const MENU = [
   { label: 'Mission', href: '#mission' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Articles', href: '#articles' },
   { label: 'Skills', href: '#skill-tree' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'FAQ', href: '#faq' },
+  { label: 'Articles', href: '#articles' },
 ];
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -93,10 +94,11 @@ const navItemClass = cn(
   'h-auto rounded-full px-1.5 py-0.5 text-base font-normal hover:bg-white/15 focus:bg-transparent focus-visible:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-transparent data-active:focus-visible:bg-white/25 data-popup-open:bg-white/15 data-popup-open:hover:bg-white/15 data-popup-open:focus:bg-white/15 data-open:bg-white/15 data-open:hover:bg-white/15 data-open:focus:bg-white/15',
 );
 
-const ANNOUNCEMENTS = [
-  'Funding required - see mission',
-  'Backseat project is now live',
-  'Currently listening to',
+const ANNOUNCEMENTS: { text: string; href?: string }[] = [
+  { text: 'Funding required - see mission' },
+  { text: 'Backseat project is now live', href: '#projects/backseat-files' },
+  { text: 'Design jigs article is live', href: '#articles/design-jigs' },
+  { text: 'Currently listening to' },
 ];
 
 const WORDS = [
@@ -180,16 +182,6 @@ function useTick(intervalMs: number) {
 
 function useCycle<T>(items: T[], intervalMs: number) {
   return items[useTick(intervalMs) % items.length];
-}
-
-function useHash() {
-  const [hash, setHash] = useState(() => window.location.hash);
-  useEffect(() => {
-    const onChange = () => setHash(window.location.hash);
-    window.addEventListener('hashchange', onChange);
-    return () => window.removeEventListener('hashchange', onChange);
-  }, []);
-  return hash;
 }
 
 type NowPlaying = {
@@ -285,21 +277,35 @@ function Listening({ track, link }: { track: NowPlaying | null; link: boolean })
   );
 }
 
+function AnnouncementLink({ text, href }: { text: string; href: string }) {
+  return (
+    <a
+      href={href}
+      className="relative z-10 inline-flex items-center gap-1 bg-black px-1 text-[#ccff00] no-underline"
+    >
+      <span>{text}</span>
+      <ArrowUpRight aria-hidden className="size-3.5 shrink-0" />
+    </a>
+  );
+}
+
 function Marquee() {
   const track = useNowPlaying();
-  const listeningIndex = ANNOUNCEMENTS.indexOf('Currently listening to');
+  const listeningIndex = ANNOUNCEMENTS.findIndex((item) => item.text === 'Currently listening to');
 
   return (
-    <div className="overflow-hidden bg-foreground py-1 text-sm font-bold whitespace-nowrap text-background">
-      <div className="flex w-max motion-safe:animate-marquee">
+    <div className="group overflow-hidden bg-[#ccff00] text-sm font-bold whitespace-nowrap text-black">
+      <div className="flex w-max motion-safe:animate-marquee group-hover:[animation-play-state:paused]">
         {[0, 1].map((copy) => (
           <ul key={copy} aria-hidden={copy === 1} className="flex shrink-0">
-            {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map((text, i) => (
-              <li key={i} className="flex items-center px-4">
-                {text === 'Currently listening to' ? (
+            {[...ANNOUNCEMENTS, ...ANNOUNCEMENTS].map((item, i) => (
+              <li key={i} className="relative z-10 flex items-center px-4">
+                {item.text === 'Currently listening to' ? (
                   <Listening track={track} link={copy === 0 && i === listeningIndex} />
+                ) : item.href ? (
+                  <AnnouncementLink text={item.text} href={item.href} />
                 ) : (
-                  text
+                  item.text
                 )}
               </li>
             ))}
@@ -384,7 +390,10 @@ export function Home() {
   const word = WORDS[wordTick % WORDS.length];
   const role = ROLES[wordTick % ROLES.length];
   const hash = useHash();
-  const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(hash) ? hash : '#mission';
+  const sectionHref = `#${parseHash(hash).section}`;
+  const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(sectionHref)
+    ? sectionHref
+    : '#mission';
   const socialsMenuRef = useRef<NavigationMenuRootActions | null>(null);
 
   return (
