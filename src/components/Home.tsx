@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ComponentType, type SVGProps } from 'react';
+import type { NavigationMenuRootActions } from '@base-ui/react/navigation-menu';
 import { Calendar } from 'lucide-react';
 import {
   NavigationMenu,
@@ -384,7 +385,7 @@ export function Home() {
   const role = ROLES[wordTick % ROLES.length];
   const hash = useHash();
   const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(hash) ? hash : '#mission';
-  const socialsMenuRef = useRef<{ close: () => void } | null>(null);
+  const socialsMenuRef = useRef<NavigationMenuRootActions | null>(null);
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
