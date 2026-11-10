@@ -90,15 +90,23 @@ export function ExperienceDetail({ experience }: { experience: Experience }) {
           <p className="text-sm leading-relaxed text-neutral-700">{experience.summary}</p>
           {experience.images && (
             <div className="grid grid-cols-2 gap-2">
-              {experience.images.map((image, i) => (
-                <img
-                  key={image.src}
-                  src={image.src}
-                  alt={image.alt}
-                  loading="lazy"
-                  className={cn('aspect-video w-full rounded object-cover', i === 0 && 'col-span-2')}
-                />
-              ))}
+              {experience.images.map((image, i) => {
+                const diagram = image.src.endsWith('.svg');
+                return (
+                  <img
+                    key={image.src}
+                    src={image.src}
+                    alt={image.alt}
+                    loading="lazy"
+                    className={cn(
+                      'w-full rounded',
+                      diagram
+                        ? 'col-span-2 h-auto border border-neutral-200 bg-white'
+                        : cn('aspect-video object-cover', i === 0 && 'col-span-2'),
+                    )}
+                  />
+                );
+              })}
             </div>
           )}
           <ul className="flex flex-col gap-2">

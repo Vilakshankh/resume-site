@@ -21,8 +21,8 @@ const MENU = [
   { label: 'Mission', href: '#mission' },
   { label: 'Skills', href: '#skill-tree' },
   { label: 'Projects', href: '#projects' },
-  { label: 'FAQ', href: '#faq' },
   { label: 'Articles', href: '#articles' },
+  { label: 'FAQ', href: '#faq' },
 ];
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -91,7 +91,7 @@ const SOCIALS: {
 
 const navItemClass = cn(
   navigationMenuTriggerStyle(),
-  'h-auto rounded-full px-1.5 py-0.5 text-base font-normal hover:bg-white/15 focus:bg-transparent focus-visible:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-transparent data-active:focus-visible:bg-white/25 data-popup-open:bg-white/15 data-popup-open:hover:bg-white/15 data-popup-open:focus:bg-white/15 data-open:bg-white/15 data-open:hover:bg-white/15 data-open:focus:bg-white/15',
+  'h-auto rounded-full px-0.5 py-0.5 text-xs font-normal min-[360px]:px-1 min-[360px]:text-[13px] min-[480px]:px-1.5 min-[480px]:text-sm sm:text-base hover:bg-white/15 focus:bg-transparent focus-visible:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-transparent data-active:focus-visible:bg-white/25 data-popup-open:bg-white/15 data-popup-open:hover:bg-white/15 data-popup-open:focus:bg-white/15 data-open:bg-white/15 data-open:hover:bg-white/15 data-open:focus:bg-white/15',
 );
 
 const ANNOUNCEMENTS: { text: string; href?: string }[] = [
@@ -112,7 +112,7 @@ const WORDS = [
   'product design',
 ];
 
-const WORD_INTERVAL_MS = 2200;
+const WORD_INTERVAL_MS = 5000;
 
 const PHOTOS = [1, 2, 3, 4].map((n) => `/photobooth/${n}.png`);
 
@@ -147,11 +147,12 @@ function randomPositions(): Position[] {
   }));
 }
 
-function SlotText({ text }: { text: string }) {
+function useSlot(text: string) {
   const [display, setDisplay] = useState(() => scramble(text, 0));
 
   useEffect(() => {
     let settled = 0;
+    setDisplay(scramble(text, 0));
     const id = setInterval(() => {
       settled += 1;
       setDisplay(scramble(text, settled));
@@ -159,6 +160,12 @@ function SlotText({ text }: { text: string }) {
     }, SLOT_TICK_MS);
     return () => clearInterval(id);
   }, [text]);
+
+  return display;
+}
+
+function SlotText({ text }: { text: string }) {
+  const display = useSlot(text);
 
   return (
     <span aria-label={text}>
@@ -239,7 +246,7 @@ function Listening({ track, link }: { track: NowPlaying | null; link: boolean })
           alt=""
           width={16}
           height={16}
-          className="size-4 shrink-0 object-cover"
+          className="size-5 shrink-0 object-cover"
         />
       )}
       <span>{track.title}</span>
@@ -266,7 +273,7 @@ function Listening({ track, link }: { track: NowPlaying | null; link: boolean })
           href={track.url}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-inherit no-underline"
+          className="inline-flex items-center gap-1.5 font-bold text-[#ccff00] no-underline"
         >
           {details}
         </a>
@@ -281,10 +288,10 @@ function AnnouncementLink({ text, href }: { text: string; href: string }) {
   return (
     <a
       href={href}
-      className="relative z-10 inline-flex items-center gap-1 bg-black px-1 text-[#ccff00] no-underline"
+      className="relative z-10 inline-flex items-center gap-1 font-bold text-[#ccff00] no-underline"
     >
       <span>{text}</span>
-      <ArrowUpRight aria-hidden className="size-3.5 shrink-0" />
+      <ArrowUpRight aria-hidden className="size-4 shrink-0" />
     </a>
   );
 }
@@ -294,7 +301,7 @@ function Marquee() {
   const listeningIndex = ANNOUNCEMENTS.findIndex((item) => item.text === 'Currently listening to');
 
   return (
-    <div className="group overflow-hidden bg-[#ccff00] text-sm font-bold whitespace-nowrap text-black">
+    <div className="group overflow-hidden bg-black text-base font-normal whitespace-nowrap text-white">
       <div className="flex w-max motion-safe:animate-marquee group-hover:[animation-play-state:paused]">
         {[0, 1].map((copy) => (
           <ul key={copy} aria-hidden={copy === 1} className="flex shrink-0">
@@ -318,6 +325,7 @@ function Marquee() {
 
 function Photobooth({ role }: { role: string }) {
   const current = useCycle(PHOTOS, PHOTO_INTERVAL_MS);
+  const roleDisplay = useSlot(role);
   const [positions, setPositions] = useState<Position[] | null>(null);
 
   return (
@@ -355,18 +363,38 @@ function Photobooth({ role }: { role: string }) {
       </div>
       <figcaption className="flex items-baseline gap-2">
         <span className="text-lg">vilakshan khanna</span>
-        <span
-          key={role}
-          className="text-xs tracking-widest text-muted-foreground animate-in fade-in slide-in-from-bottom-1 duration-500"
-        >
-          {role}
+        <span className="font-script text-lg leading-none text-muted-foreground">
+          <span className="sr-only">{role}</span>
+          <span aria-hidden>{roleDisplay}</span>
         </span>
       </figcaption>
     </figure>
   );
 }
 
-function Statement({ word }: { word: string }) {
+function FreelanceNote() {
+  return (
+    <aside className="freelance-note">
+      <p>
+        looking for freelancing
+        <br />
+        opportunities in
+        <span className="freelance-note-offer">
+          brand design and
+          <br />
+          product design
+        </span>
+        <span className="freelance-note-where">
+          remote or in person
+          <br />
+          toronto, canada
+        </span>
+      </p>
+    </aside>
+  );
+}
+
+function Statement({ word, display }: { word: string; display: string }) {
   return (
     <>
       Dont be a robot.
@@ -374,11 +402,9 @@ function Statement({ word }: { word: string }) {
       Having intention is human.
       <br />
       I express mine through{' '}
-      <span
-        key={word}
-        className="inline-block font-script animate-in fade-in slide-in-from-bottom-2 duration-500"
-      >
-        {word}
+      <span className="inline-block font-script">
+        <span className="sr-only">{word}</span>
+        <span aria-hidden>{display}</span>
       </span>
       .
     </>
@@ -389,6 +415,7 @@ export function Home() {
   const wordTick = useTick(WORD_INTERVAL_MS);
   const word = WORDS[wordTick % WORDS.length];
   const role = ROLES[wordTick % ROLES.length];
+  const wordDisplay = useSlot(word);
   const hash = useHash();
   const sectionHref = `#${parseHash(hash).section}`;
   const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(sectionHref)
@@ -417,11 +444,12 @@ export function Home() {
           <Articles className="col-span-5 row-span-3 min-h-0 md:row-span-2" />
         ) : (
           <>
+            <FreelanceNote />
             <p
               aria-hidden
               className="pointer-events-none col-span-5 overflow-clip text-[clamp(2.5rem,6vw,6rem)] leading-[1.1] tracking-tight opacity-10 blur-[7px] select-none md:col-span-4 mobile-portrait:col-start-1 mobile-portrait:row-span-4 mobile-portrait:row-start-1 mobile-portrait:self-start"
             >
-              <Statement word={word} />
+              <Statement word={word} display={wordDisplay} />
             </p>
 
             <div className="fixed inset-0 m-auto h-fit w-fit md:-translate-y-16 mobile-portrait:static mobile-portrait:col-span-5 mobile-portrait:col-start-1 mobile-portrait:row-start-2 mobile-portrait:my-0 mobile-landscape:inset-auto mobile-landscape:top-4 mobile-landscape:left-6 mobile-landscape:m-0">
@@ -429,7 +457,7 @@ export function Home() {
             </div>
 
             <h1 className="col-span-5 row-start-3 mb-16 self-end text-center text-[clamp(1.5rem,2.6vw,2.5rem)] leading-[1.25] tracking-tight mobile-portrait:col-start-1 mobile-portrait:row-start-3 mobile-portrait:mt-6 mobile-portrait:mb-0">
-              <Statement word={word} />
+              <Statement word={word} display={wordDisplay} />
             </h1>
           </>
         )}
@@ -440,11 +468,11 @@ export function Home() {
         align="end"
         actionsRef={socialsMenuRef}
         className={cn(
-          'fixed inset-x-4 z-50 mx-auto w-fit max-w-[calc(100vw-2rem)] flex-none justify-center rounded-full bg-black/50 p-1 text-white shadow-lg ring-1 ring-white/15 backdrop-blur-2xl backdrop-saturate-150',
+          'fixed inset-x-2 z-50 mx-auto w-fit max-w-[calc(100vw-1rem)] flex-none justify-center rounded-full bg-black/50 p-0.5 text-white shadow-lg ring-1 ring-white/15 backdrop-blur-2xl backdrop-saturate-150 min-[480px]:inset-x-4 min-[480px]:max-w-[calc(100vw-2rem)] min-[480px]:p-1',
           'bottom-[max(1rem,env(safe-area-inset-bottom))]',
         )}
       >
-        <NavigationMenuList className="gap-0.5">
+        <NavigationMenuList className="gap-0 min-[360px]:gap-0.5">
           {MENU.map((item) => (
             <NavigationMenuItem key={item.label}>
               <NavigationMenuLink

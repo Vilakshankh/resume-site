@@ -4,13 +4,6 @@ import { cn } from '@/lib/utils';
 import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Accordion } from '@/components/ui/accordion';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -59,20 +52,6 @@ function ArticleNav({
   );
 }
 
-function ArticleBreadcrumb({ article }: { article: Writing }) {
-  return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>Articles</BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>{article.title}</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-}
-
 function ArticleCopy({
   article,
   topRef,
@@ -82,7 +61,6 @@ function ArticleCopy({
 }) {
   return (
     <article ref={topRef} className="flex flex-col gap-4">
-      <ArticleBreadcrumb article={article} />
       <WritingView writing={article} />
     </article>
   );
@@ -126,16 +104,16 @@ export function Articles({ className }: { className?: string }) {
 
   if (!isDesktop) {
     return (
-      <div className={cn('overflow-y-auto px-3 pb-nav', className)}>
+      <div className={cn('min-w-0 overflow-x-hidden overflow-y-auto px-1 pb-nav sm:px-3', className)}>
         <Accordion
           value={openSection ? [openSection] : []}
           onValueChange={value => setOpenSection(value[0] ?? null)}
         >
-          <MobileSection value="article" label="Article" summary={selected.title}>
+          <MobileSection value="article" label="Articles" summary={selected.title}>
             <ArticleNav selected={selected.slug} onSelect={selectArticle} />
           </MobileSection>
         </Accordion>
-        <div className="pt-8">
+        <div className="pt-6">
           <ArticleCopy article={selected} topRef={topRef} />
         </div>
       </div>
@@ -149,7 +127,7 @@ export function Articles({ className }: { className?: string }) {
         className,
       )}
     >
-      <Column label="Article">
+      <Column label="Articles">
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center pr-3 pb-nav">
           <ArticleNav selected={selected.slug} onSelect={selectArticle} />
         </div>
@@ -158,7 +136,7 @@ export function Articles({ className }: { className?: string }) {
       <Separator orientation="vertical" className={COLUMN_DIVIDER_CLASS} />
 
       <ScrollArea className="h-full min-h-0">
-        <div className="flex min-h-full items-center justify-center px-3 pb-nav">
+        <div className="px-3 pt-4 pb-nav">
           <div className="w-full max-w-3xl">
             <ArticleCopy article={selected} topRef={topRef} />
           </div>

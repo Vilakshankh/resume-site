@@ -24,7 +24,7 @@ const FAQS: { q: string; a: string; link?: FaqRef }[] = [
   },
   {
     q: 'Founding designer means doing ______.',
-    a: 'Everything. At Draftaid that means product UI, an icon system, the Webflow site, brand guidelines, and the tradeshow booth.',
+    a: 'Everything a customer sees. At Draftaid that means the brand system and brand engine, the Webflow site, sales and customer-success decks, product UI, and the tradeshow booth.',
     link: { href: '#skill-tree/draftaid', label: 'Draftaid' },
   },
   {
@@ -97,7 +97,7 @@ function CardMark({ inverted }: { inverted?: boolean }) {
             key={deg}
             className={cn(
               'absolute inset-y-0 left-1 w-2 origin-bottom rounded-[2px] border',
-              inverted ? 'border-red-800 bg-white' : 'border-white bg-red-800',
+              inverted ? 'border-neutral-950 bg-white' : 'border-white bg-black',
             )}
             style={{ transform: `rotate(${deg}deg)` }}
           />
@@ -116,13 +116,13 @@ function FaqCard({ q, a, link }: { q: string; a: string; link?: FaqRef }) {
   const external = !!link && /^https?:\/\//.test(link.href);
 
   return (
-    <div className="group relative min-h-44 perspective-[1200px] md:min-h-0">
+    <div className="group relative min-h-44 perspective-[1200px] transition-opacity duration-200 motion-reduce:transition-none md:min-h-0">
       <button
         type="button"
         aria-pressed={flipped}
         aria-label={flipped ? a : q}
         onClick={() => setFlipped((f) => !f)}
-        className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-800"
+        className="absolute inset-0 z-0 cursor-pointer rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
       />
       <div
         aria-hidden
@@ -131,18 +131,18 @@ function FaqCard({ q, a, link }: { q: string; a: string; link?: FaqRef }) {
           flipped && 'rotate-y-180',
         )}
       >
-        <div className={cn(FACE_CLASS, 'bg-red-800 text-white')}>
-          <p className="text-[clamp(0.95rem,1.25vw,1.35rem)] leading-tight font-bold tracking-tight">{q}</p>
+        <div className={cn(FACE_CLASS, 'bg-black text-white')}>
+          <p className="text-[clamp(0.95rem,1.25vw,1.35rem)] leading-tight font-normal tracking-tight">{q}</p>
           <CardMark />
         </div>
-        <div className={cn(FACE_CLASS, 'rotate-y-180 bg-white text-red-800 ring-1 ring-red-800/15')}>
-          <p className="text-[clamp(0.8rem,0.95vw,1rem)] leading-snug font-bold tracking-tight">{a}</p>
+        <div className={cn(FACE_CLASS, 'rotate-y-180 bg-white text-neutral-950 ring-1 ring-black/15')}>
+          <p className="text-[clamp(0.8rem,0.95vw,1rem)] leading-snug font-normal tracking-tight">{a}</p>
           <div className="flex items-end justify-between gap-2">
             {link ? (
               <a
                 href={link.href}
                 {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
-                className="pointer-events-auto relative z-10 inline-flex max-w-[60%] items-center gap-0.5 text-xs font-bold tracking-tight text-neutral-950 underline decoration-neutral-950/30 underline-offset-2 hover:decoration-neutral-950 md:text-sm"
+                className="pointer-events-auto relative z-10 inline-flex max-w-[60%] items-center gap-0.5 text-xs font-bold tracking-tight text-red-800 underline decoration-red-800/40 underline-offset-2 hover:decoration-red-800 md:text-sm"
               >
                 <span className="truncate">{link.label}</span>
                 <ArrowUpRight aria-hidden className="size-3.5 shrink-0 md:size-4" />
@@ -163,7 +163,7 @@ export function Faq({ className }: { className?: string }) {
     <section
       aria-label="Frequently asked questions"
       className={cn(
-        'grid grid-cols-2 gap-2 overflow-y-auto pb-nav md:grid-cols-4 md:grid-rows-4 md:overflow-visible',
+        'grid grid-cols-2 gap-2 overflow-y-auto pb-nav md:grid-cols-4 md:grid-rows-4 md:overflow-visible [&:has(>:hover)>:not(:hover)]:opacity-40',
         className,
       )}
     >

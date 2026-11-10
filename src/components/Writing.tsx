@@ -64,16 +64,23 @@ export function WritingCards({ writings, onOpen }: { writings: Writing[]; onOpen
 
 export function WritingView({ writing }: { writing: Writing }) {
   return (
-    <div>
-      <h3 className="mb-3 text-left text-xl font-semibold text-neutral-950 md:text-2xl">{writing.title}</h3>
-      <p className="mb-3 text-sm text-neutral-800">{writing.description}</p>
-      <div className="mb-8 flex items-center gap-3">
-        <span className="inline-flex w-fit items-center gap-1.5 bg-neutral-950 px-2 py-0.5 font-mono text-[11px] text-white">
-          <Newspaper aria-hidden className="size-3" />
-          article
-        </span>
-        <p className="text-sm text-neutral-500">by Vilakshan Khanna · {formatWritingDate(writing.date)}</p>
-      </div>
+    <div className="min-w-0">
+      <header className="mb-8 md:mb-16">
+        <h3 className="mb-3 text-left text-2xl font-bold leading-[1.15] tracking-tight text-balance text-neutral-950 md:mb-4 md:text-4xl">
+          {writing.title}
+        </h3>
+        <p className="mb-3 text-sm leading-relaxed text-neutral-800 md:mb-4">{writing.description}</p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+          <span className="inline-flex w-fit items-center gap-1.5 bg-neutral-950 px-2 py-0.5 font-mono text-[11px] text-white">
+            <Newspaper aria-hidden className="size-3" />
+            article
+          </span>
+          <p className="min-w-0 text-sm leading-snug text-neutral-500">
+            by Vilakshan Khanna
+            <span className="whitespace-nowrap"> · {formatWritingDate(writing.date)}</span>
+          </p>
+        </div>
+      </header>
       {writing.body}
     </div>
   );

@@ -127,17 +127,17 @@ function ProjectNav({
       orientation="vertical"
       value={[selected]}
       onValueChange={value => value[0] && onSelect(value[0])}
-      className="w-fit gap-0"
+      className="w-full gap-0"
     >
       {PROJECTS.map(project => {
         if (HIDDEN_PROJECTS.has(project)) {
           return (
             <div
               key={project}
-              className="flex h-auto w-full cursor-default items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5"
+              className="flex h-auto w-full cursor-default items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 opacity-40"
             >
-              <EyeOff aria-hidden className="mt-0.5 size-3.5 shrink-0 text-neutral-950 opacity-40" />
-              <span className="text-sm text-neutral-500">{project}</span>
+              <EyeOff aria-hidden className="mt-0.5 size-3.5 shrink-0 text-neutral-950" />
+              <span className="text-sm font-medium text-neutral-500">{project}</span>
             </div>
           );
         }
@@ -145,7 +145,13 @@ function ProjectNav({
         const link = PROJECT_LINKS[project];
 
         return (
-          <div key={project} className="flex items-start gap-1">
+          <div
+            key={project}
+            className={cn(
+              'flex w-full items-start gap-1 transition-opacity',
+              project !== selected && 'opacity-40 hover:opacity-100 focus-within:opacity-100',
+            )}
+          >
             <ToggleGroupItem
               value={project}
               className="group h-auto min-w-0 flex-1 items-start justify-start gap-2 rounded-none py-2 pr-0 pl-2.5 text-left font-normal whitespace-normal hover:bg-transparent aria-pressed:bg-neutral-50"
@@ -154,7 +160,7 @@ function ProjectNav({
                 aria-hidden
                 className="mt-0.5 size-3.5 shrink-0 text-neutral-950 opacity-0 transition-opacity group-aria-pressed:opacity-100"
               />
-              <span className="text-sm text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:font-medium group-aria-pressed:text-neutral-950">
+              <span className="text-sm font-medium text-neutral-500 transition-colors group-hover:text-neutral-900 group-aria-pressed:text-neutral-950">
                 {project}
               </span>
             </ToggleGroupItem>
@@ -279,7 +285,7 @@ export function Projects({ className }: { className?: string }) {
           value={openSection ? [openSection] : []}
           onValueChange={value => setOpenSection((value[0] as ProjectSection | undefined) ?? null)}
         >
-          <MobileSection value="project" label="Project" summary={selected}>
+          <MobileSection value="project" label="Projects" summary={selected}>
             {projectNav}
           </MobileSection>
           <MobileSection value="media" label="Media" summary={mediaSummary}>
@@ -302,8 +308,8 @@ export function Projects({ className }: { className?: string }) {
         className,
       )}
     >
-      <Column label="Project">
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pr-3 pb-nav">
+      <Column label="Projects">
+        <div className="flex min-h-0 flex-1 flex-col justify-center pr-3 pb-nav">
           <ProjectNav selected={selected} onSelect={setSelected} />
         </div>
       </Column>

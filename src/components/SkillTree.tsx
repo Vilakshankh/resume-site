@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -52,8 +52,8 @@ type MobileSectionProps = {
 export function MobileSection({ value, label, summary, children }: MobileSectionProps) {
   return (
     <AccordionItem value={value} className="border-none">
-      <AccordionTrigger className="items-center gap-3 rounded-none py-3 hover:no-underline">
-        <span className="text-base font-semibold text-neutral-950">{label}</span>
+      <AccordionTrigger className="w-full min-w-0 items-center gap-3 rounded-none py-3 hover:no-underline">
+        <span className="shrink-0 text-base font-semibold text-neutral-950">{label}</span>
         <span className="min-w-0 flex-1 truncate text-right text-sm font-normal text-neutral-500">{summary}</span>
       </AccordionTrigger>
       <AccordionContent className="h-auto pb-4">{children}</AccordionContent>
@@ -124,13 +124,12 @@ export function SkillTree({ className }: { className?: string }) {
     setSelectedId(visible[(index + delta + visible.length) % visible.length].id);
   }
 
-  const skillNav = <SkillNav activeSkill={activeSkill} selected={selected} onSelect={selectSkill} />;
+  const skillNav = <SkillNav activeSkill={activeSkill} onSelect={selectSkill} />;
 
   const experiencePanel = (
     <ExperiencePanel
       experiences={visible}
       selectedId={selected?.id}
-      highlightAll={!!activeSkill}
       onSelect={selectExperience}
       query={query}
       onQueryChange={setQuery}
@@ -146,7 +145,7 @@ export function SkillTree({ className }: { className?: string }) {
           value={openSection ? [openSection] : []}
           onValueChange={value => setOpenSection((value[0] as Section | undefined) ?? null)}
         >
-          <MobileSection value="skill" label="Skill" summary={activeSkill ?? 'All'}>
+          <MobileSection value="skill" label="Skills" summary={activeSkill ?? 'All'}>
             {skillNav}
           </MobileSection>
           <MobileSection value="experience" label="Experience" summary={selected?.company}>
@@ -165,8 +164,8 @@ export function SkillTree({ className }: { className?: string }) {
         className,
       )}
     >
-      <Column label="Skill">
-        <div className="flex min-h-0 flex-1 flex-col items-center justify-center pr-3 pb-nav">
+      <Column label="Skills">
+        <div className="flex min-h-0 flex-1 flex-col justify-center pr-3 pb-nav">
           {skillNav}
         </div>
       </Column>
@@ -192,7 +191,7 @@ export function SkillTree({ className }: { className?: string }) {
               <TooltipTrigger
                 render={<Button variant="outline" size="icon-sm" className={ARROW_CLASS} aria-label="Previous experience" onClick={() => step(-1)} />}
               >
-                <ChevronLeft aria-hidden className="size-3.5" />
+                <ChevronUp aria-hidden className="size-3.5" />
               </TooltipTrigger>
               <TooltipContent>Previous</TooltipContent>
             </Tooltip>
@@ -200,7 +199,7 @@ export function SkillTree({ className }: { className?: string }) {
               <TooltipTrigger
                 render={<Button variant="outline" size="icon-sm" className={ARROW_CLASS} aria-label="Next experience" onClick={() => step(1)} />}
               >
-                <ChevronRight aria-hidden className="size-3.5" />
+                <ChevronDown aria-hidden className="size-3.5" />
               </TooltipTrigger>
               <TooltipContent>Next</TooltipContent>
             </Tooltip>

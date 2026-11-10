@@ -23,16 +23,16 @@ function Film({ src, poster, alt }: WritingCover) {
       muted
       loop
       playsInline
-      className="mb-12 w-full rounded-sm"
+      className="mb-8 w-full max-w-full rounded-sm md:mb-12"
     />
   );
 }
 
 function Section({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <section className="mb-16">
-      {title && <h4 className="mb-6 text-left text-xl font-bold text-neutral-950 md:text-2xl">{title}</h4>}
-      <div className="space-y-6 text-sm leading-relaxed text-neutral-800 [&_em]:text-neutral-950 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-neutral-950 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">
+    <section className="mb-10 md:mb-16">
+      {title && <h4 className="mb-4 text-left text-lg font-bold text-balance text-neutral-950 md:mb-6 md:text-2xl">{title}</h4>}
+      <div className="space-y-4 text-sm leading-relaxed break-words text-neutral-800 md:space-y-6 [&_em]:text-neutral-950 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-neutral-950 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">
         {children}
       </div>
     </section>
@@ -46,7 +46,7 @@ function Subheading({ children }: { children: ReactNode }) {
 function Figure({ src, alt, caption }: { src: string; alt: string; caption?: string }) {
   return (
     <figure className="space-y-3">
-      <img src={src} alt={alt} loading="lazy" className="h-auto w-full rounded-sm" />
+      <img src={src} alt={alt} loading="lazy" className="h-auto w-full max-w-full rounded-sm" />
       {caption && <figcaption className="text-sm text-neutral-500">{caption}</figcaption>}
     </figure>
   );
@@ -54,9 +54,9 @@ function Figure({ src, alt, caption }: { src: string; alt: string; caption?: str
 
 function Gallery({ images }: { images: { src: string; alt: string }[] }) {
   return (
-    <div className="mb-12 flex gap-3 overflow-x-auto">
+    <div className="mb-8 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto overscroll-x-contain md:mb-12 md:gap-3">
       {images.map(image => (
-        <img key={image.src} src={image.src} alt={image.alt} className="h-80 w-auto shrink-0 rounded-sm" />
+        <img key={image.src} src={image.src} alt={image.alt} className="h-52 w-auto max-w-none shrink-0 rounded-sm sm:h-64 md:h-80" />
       ))}
     </div>
   );
@@ -68,7 +68,7 @@ function Link({ href, children }: { href: string; children: ReactNode }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 text-blue-600 hover:underline"
+      className="inline-flex max-w-full items-center gap-2 break-words text-blue-600 hover:underline"
     >
       {children}
       <ExternalLink aria-hidden className="size-4" />
@@ -554,7 +554,7 @@ export const WRITING: Writing[] = [
         <img
           src="/articles/trails/product.png"
           alt="Trails Product Screenshot"
-          className="mb-12 h-auto w-full rounded-sm"
+          className="mb-8 h-auto w-full max-w-full rounded-sm md:mb-12"
         />
         <Section title="Actionable take aways">
           <ul>
@@ -596,7 +596,7 @@ export const WRITING: Writing[] = [
     cover: { src: SYNTRA.hero, alt: 'Syntra hero illustration' },
     body: (
       <>
-        <img src={SYNTRA.hero} alt="Syntra hero illustration" className="mb-12 h-auto w-full rounded-sm" />
+        <img src={SYNTRA.hero} alt="Syntra hero illustration" className="mb-8 h-auto w-full max-w-full rounded-sm md:mb-12" />
         <Section>
           <p>
             Designers and engineers have spent decades battling the same fundamental problem: the gap between

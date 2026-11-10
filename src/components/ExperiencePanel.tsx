@@ -8,7 +8,6 @@ import { ExperienceCard } from './ExperienceCard';
 type ExperiencePanelProps = {
   experiences: Experience[];
   selectedId: string | undefined;
-  highlightAll?: boolean;
   onSelect: (id: string) => void;
   query: string;
   onQueryChange: (query: string) => void;
@@ -17,7 +16,6 @@ type ExperiencePanelProps = {
 export function ExperiencePanel({
   experiences,
   selectedId,
-  highlightAll = false,
   onSelect,
   query,
   onQueryChange,
@@ -55,7 +53,7 @@ export function ExperiencePanel({
                 key={exp.id}
                 experience={exp}
                 selected={exp.id === selectedId}
-                highlighted={highlightAll || exp.id === selectedId}
+                highlighted={exp.id === selectedId}
                 onSelect={() => onSelect(exp.id)}
                 ref={node => {
                   if (node) cardRefs.current.set(exp.id, node);
