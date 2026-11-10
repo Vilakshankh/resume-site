@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType, type SVGProps } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type SVGProps } from 'react';
 import { Calendar } from 'lucide-react';
 import {
   NavigationMenu,
@@ -20,7 +20,7 @@ const MENU = [
   { label: 'FAQ', href: '#faq' },
   { label: 'Projects', href: '#projects' },
   { label: 'Articles', href: '#articles' },
-  { label: 'Skill Tree', href: '#skill-tree' },
+  { label: 'Skills', href: '#skill-tree' },
 ];
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -89,7 +89,7 @@ const SOCIALS: {
 
 const navItemClass = cn(
   navigationMenuTriggerStyle(),
-  'h-auto rounded-full px-1.5 py-0.5 text-base font-normal hover:bg-white/15 focus:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-white/25 data-popup-open:bg-white/15 data-open:bg-white/15',
+  'h-auto rounded-full px-1.5 py-0.5 text-base font-normal hover:bg-white/15 focus:bg-transparent focus-visible:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-transparent data-active:focus-visible:bg-white/25 data-popup-open:bg-white/15 data-popup-open:hover:bg-white/15 data-popup-open:focus:bg-white/15 data-open:bg-white/15 data-open:hover:bg-white/15 data-open:focus:bg-white/15',
 );
 
 const ANNOUNCEMENTS = [
@@ -384,6 +384,7 @@ export function Home() {
   const role = ROLES[wordTick % ROLES.length];
   const hash = useHash();
   const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(hash) ? hash : '#mission';
+  const socialsMenuRef = useRef<{ close: () => void } | null>(null);
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
@@ -427,6 +428,7 @@ export function Home() {
       <NavigationMenu
         side="top"
         align="end"
+        actionsRef={socialsMenuRef}
         className={cn(
           'fixed inset-x-4 z-50 mx-auto w-fit max-w-[calc(100vw-2rem)] flex-none justify-center rounded-full bg-black/50 p-1 text-white shadow-lg ring-1 ring-white/15 backdrop-blur-2xl backdrop-saturate-150',
           'bottom-[max(1rem,env(safe-area-inset-bottom))]',
@@ -438,6 +440,13 @@ export function Home() {
               <NavigationMenuLink
                 href={item.href}
                 active={item.href === activeHref}
+                closeOnClick
+                onMouseEnter={() => {
+                  socialsMenuRef.current?.close();
+                  if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                  }
+                }}
                 className={navItemClass}
               >
                 {item.label}
@@ -454,10 +463,11 @@ export function Home() {
                       href={href}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-md px-2.5 py-1.5 text-sm"
+                      closeOnClick
+                      className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm leading-none"
                     >
-                      <Icon />
-                      {label}
+                      <Icon className="size-4 shrink-0" />
+                      <span>{label}</span>
                     </NavigationMenuLink>
                   </li>
                 ))}

@@ -77,7 +77,7 @@ function CardMark({ inverted }: { inverted?: boolean }) {
             key={deg}
             className={cn(
               'absolute inset-y-0 left-1 w-2 origin-bottom rounded-[2px] border',
-              inverted ? 'border-red-900 bg-white' : 'border-white bg-red-900',
+              inverted ? 'border-red-600 bg-white' : 'border-white bg-red-600',
             )}
             style={{ transform: `rotate(${deg}deg)` }}
           />
@@ -100,7 +100,7 @@ function FaqCard({ q, a }: { q: string; a: string }) {
       aria-pressed={flipped}
       aria-label={flipped ? a : q}
       onClick={() => setFlipped((f) => !f)}
-      className="group min-h-44 cursor-pointer rounded-2xl perspective-[1200px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-900 md:min-h-0"
+      className="group min-h-44 cursor-pointer rounded-2xl perspective-[1200px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 md:min-h-0"
     >
       <div
         className={cn(
@@ -108,11 +108,11 @@ function FaqCard({ q, a }: { q: string; a: string }) {
           flipped && 'rotate-y-180',
         )}
       >
-        <div aria-hidden className={cn(FACE_CLASS, 'bg-red-900 text-white')}>
+        <div aria-hidden className={cn(FACE_CLASS, 'bg-red-600 text-white')}>
           <p className="text-[clamp(0.95rem,1.25vw,1.35rem)] leading-tight font-bold tracking-tight">{q}</p>
           <CardMark />
         </div>
-        <div aria-hidden className={cn(FACE_CLASS, 'rotate-y-180 bg-white text-red-900 ring-1 ring-red-900/15')}>
+        <div aria-hidden className={cn(FACE_CLASS, 'rotate-y-180 bg-white text-red-600 ring-1 ring-red-600/15')}>
           <p className="text-[clamp(0.8rem,0.95vw,1rem)] leading-snug font-bold tracking-tight">{a}</p>
           <CardMark inverted />
         </div>
@@ -126,7 +126,7 @@ export function Faq({ className }: { className?: string }) {
     <section
       aria-label="Frequently asked questions"
       className={cn(
-        'grid grid-cols-2 gap-0.5 overflow-y-auto pb-nav md:grid-cols-4 md:grid-rows-4 md:overflow-visible',
+        'grid grid-cols-2 gap-2 overflow-y-auto pb-nav md:grid-cols-4 md:grid-rows-4 md:overflow-visible',
         className,
       )}
     >
