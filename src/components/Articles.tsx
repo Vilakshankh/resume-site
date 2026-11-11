@@ -3,12 +3,12 @@ import { Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Accordion } from '@/components/ui/accordion';
+import { PanelDrawer } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { WRITING, type Writing } from '../writing';
-import { COLUMN_DIVIDER_CLASS, Column, MobileSection } from './SkillTree';
+import { COLUMN_DIVIDER_CLASS, Column } from './SkillTree';
 import { WritingView } from './Writing';
 
 const ARTICLES = [...WRITING].sort((a, b) => b.date.localeCompare(a.date));
@@ -72,7 +72,7 @@ export function Articles({ className }: { className?: string }) {
   const [selectedSlug, setSelectedSlug] = useState(
     () => articleFromHash(window.location.hash) ?? ARTICLES[0]?.slug ?? '',
   );
-  const [openSection, setOpenSection] = useState<string | null>('article');
+  const [articlesOpen, setArticlesOpen] = useState(false);
   const selected = ARTICLES.find(article => article.slug === selectedSlug) ?? ARTICLES[0];
   const topRef = useRef<HTMLElement>(null);
   const skipScroll = useRef(true);
@@ -81,7 +81,7 @@ export function Articles({ className }: { className?: string }) {
     const slug = articleFromHash(hash);
     if (slug) {
       setSelectedSlug(slug);
-      setOpenSection(null);
+      setArticlesOpen(false);
     }
   }, [hash]);
 
@@ -99,20 +99,20 @@ export function Articles({ className }: { className?: string }) {
 
   function selectArticle(slug: string) {
     setSelectedSlug(slug);
-    setOpenSection(null);
+    setArticlesOpen(false);
   }
 
   if (!isDesktop) {
     return (
       <div className={cn('min-w-0 overflow-x-hidden overflow-y-auto px-1 pb-nav sm:px-3', className)}>
-        <Accordion
-          value={openSection ? [openSection] : []}
-          onValueChange={value => setOpenSection(value[0] ?? null)}
+        <PanelDrawer
+          open={articlesOpen}
+          onOpenChange={setArticlesOpen}
+          title="Articles"
+          summary={selected.title}
         >
-          <MobileSection value="article" label="Articles" summary={selected.title}>
-            <ArticleNav selected={selected.slug} onSelect={selectArticle} />
-          </MobileSection>
-        </Accordion>
+          <ArticleNav selected={selected.slug} onSelect={selectArticle} />
+        </PanelDrawer>
         <div className="pt-6">
           <ArticleCopy article={selected} topRef={topRef} />
         </div>

@@ -3,9 +3,9 @@ import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PanelDrawer } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -42,25 +42,6 @@ export function Column({ label, badge, actions, children }: ColumnProps) {
   );
 }
 
-type MobileSectionProps = {
-  value: string;
-  label: string;
-  summary?: string;
-  children: ReactNode;
-};
-
-export function MobileSection({ value, label, summary, children }: MobileSectionProps) {
-  return (
-    <AccordionItem value={value} className="border-none">
-      <AccordionTrigger className="w-full min-w-0 items-center gap-3 rounded-none py-3 hover:no-underline">
-        <span className="shrink-0 text-base font-semibold text-neutral-950">{label}</span>
-        <span className="min-w-0 flex-1 truncate text-right text-sm font-normal text-neutral-500">{summary}</span>
-      </AccordionTrigger>
-      <AccordionContent className="h-auto pb-4">{children}</AccordionContent>
-    </AccordionItem>
-  );
-}
-
 // Bleeds through Home's <main> padding so column rules meet the viewport edges.
 export const COLUMN_DIVIDER_CLASS = '-mt-6 -mb-6 bg-neutral-200';
 
@@ -79,7 +60,7 @@ export function SkillTree({ className }: { className?: string }) {
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | undefined>(() => experienceFromHash(window.location.hash));
-  const [openSection, setOpenSection] = useState<Section | null>('skill');
+  const [openSection, setOpenSection] = useState<Section | null>(null);
 
   useEffect(() => {
     const id = experienceFromHash(hash);
@@ -140,18 +121,27 @@ export function SkillTree({ className }: { className?: string }) {
 
   if (!isDesktop) {
     return (
-      <div className={cn('overflow-y-auto px-3 pb-nav', className)}>
-        <Accordion
-          value={openSection ? [openSection] : []}
-          onValueChange={value => setOpenSection((value[0] as Section | undefined) ?? null)}
-        >
-          <MobileSection value="skill" label="Skills" summary={activeSkill ?? 'All'}>
+      <div className={cn('overflow-y-auto pb-nav', className)}>
+        <div className="flex flex-col">
+          <PanelDrawer
+            open={openSection === 'skill'}
+            onOpenChange={open => setOpenSection(open ? 'skill' : null)}
+            title="Skills"
+            summary={activeSkill ?? undefined}
+            triggerClassName="rounded-none px-0"
+          >
             {skillNav}
-          </MobileSection>
-          <MobileSection value="experience" label="Experience" summary={selected?.company}>
+          </PanelDrawer>
+          <PanelDrawer
+            open={openSection === 'experience'}
+            onOpenChange={open => setOpenSection(open ? 'experience' : null)}
+            title="Experience"
+            summary={selected?.company}
+            triggerClassName="rounded-none px-0"
+          >
             {experiencePanel}
-          </MobileSection>
-        </Accordion>
+          </PanelDrawer>
+        </div>
         {detail && <div className="pt-8">{detail}</div>}
       </div>
     );

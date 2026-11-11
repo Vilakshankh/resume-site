@@ -27,6 +27,13 @@
   --border: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --radius: 0.625rem;
+
+  /* Emil motion tokens — shared by nav, UI states, and drawers */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-press: 120ms;
+  --duration-hover: 150ms;
+  --duration-drawer: 500ms;
 }
 
 @theme inline {
@@ -70,6 +77,10 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
   html,
   body,
   #root {
@@ -77,6 +88,33 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+  button,
+  a,
+  [role="button"] {
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Vaul drawer timing — full-bleed edge sheet (gestures skill). */
+[data-vaul-drawer] {
+  transition: transform var(--duration-drawer) var(--ease-drawer);
+}
+[data-vaul-overlay] {
+  transition: opacity var(--duration-drawer) var(--ease-drawer);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-vaul-drawer],
+  [data-vaul-overlay] {
+    transition-duration: 160ms;
+    transition-timing-function: var(--ease-out);
   }
 }
 

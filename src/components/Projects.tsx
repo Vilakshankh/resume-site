@@ -8,11 +8,11 @@ import designToolsWithAi from '../projects/design-tools-with-ai.md?raw';
 import { cn } from '@/lib/utils';
 import { parseHash, useHash } from '@/hooks/use-hash';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { Accordion } from '@/components/ui/accordion';
+import { PanelDrawer } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { COLUMN_DIVIDER_CLASS, Column, MobileSection } from './SkillTree';
+import { COLUMN_DIVIDER_CLASS, Column } from './SkillTree';
 
 const PROJECTS = [
   'Backseat Files',
@@ -258,7 +258,7 @@ export function Projects({ className }: { className?: string }) {
   const isDesktop = useMediaQuery('(min-width: 64rem)');
   const hash = useHash();
   const [selected, setSelected] = useState(() => projectFromHash(window.location.hash) ?? PROJECTS[0]);
-  const [openSection, setOpenSection] = useState<ProjectSection | null>('project');
+  const [openSection, setOpenSection] = useState<ProjectSection | null>(null);
 
   useEffect(() => {
     const project = projectFromHash(hash);
@@ -281,17 +281,24 @@ export function Projects({ className }: { className?: string }) {
   if (!isDesktop) {
     return (
       <div className={cn('overflow-y-auto px-3 pb-nav', className)}>
-        <Accordion
-          value={openSection ? [openSection] : []}
-          onValueChange={value => setOpenSection((value[0] as ProjectSection | undefined) ?? null)}
-        >
-          <MobileSection value="project" label="Projects" summary={selected}>
+        <div className="flex flex-col divide-y divide-neutral-200">
+          <PanelDrawer
+            open={openSection === 'project'}
+            onOpenChange={open => setOpenSection(open ? 'project' : null)}
+            title="Projects"
+            summary={selected}
+          >
             {projectNav}
-          </MobileSection>
-          <MobileSection value="media" label="Media" summary={mediaSummary}>
+          </PanelDrawer>
+          <PanelDrawer
+            open={openSection === 'media'}
+            onOpenChange={open => setOpenSection(open ? 'media' : null)}
+            title="Media"
+            summary={mediaSummary}
+          >
             <ProjectMediaGallery project={selected} />
-          </MobileSection>
-        </Accordion>
+          </PanelDrawer>
+        </div>
         {PROJECT_CONTENT[selected] && (
           <div className="pt-8">
             <ProjectCopy project={selected} />

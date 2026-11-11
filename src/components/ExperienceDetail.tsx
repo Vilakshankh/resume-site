@@ -77,7 +77,7 @@ export function ExperienceDetail({ experience }: { experience: Experience }) {
           <header className="flex flex-col gap-1">
             <div className="flex items-baseline justify-between gap-3">
               <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1">
-                <h3 className="text-lg font-medium text-neutral-950">{experience.company}</h3>
+                <h3 className="text-xl font-medium text-neutral-950 lg:text-lg">{experience.company}</h3>
                 {skills.length > 0 && (
                   <span className="text-sm text-neutral-400">{skills.join(' · ')}</span>
                 )}

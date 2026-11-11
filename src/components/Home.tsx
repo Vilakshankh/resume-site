@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ComponentType, type SVGProps } from 'react';
 import type { NavigationMenuRootActions } from '@base-ui/react/navigation-menu';
-import { ArrowUpRight, Calendar } from 'lucide-react';
+import { ArrowUpRight, Calendar, Menu, X } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -10,7 +10,15 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import {
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { parseHash, useHash } from '@/hooks/use-hash';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { Articles } from './Articles';
 import { Faq } from './Faq';
@@ -91,8 +99,168 @@ const SOCIALS: {
 
 const navItemClass = cn(
   navigationMenuTriggerStyle(),
-  'h-auto rounded-full px-0.5 py-0.5 text-xs font-normal min-[360px]:px-1 min-[360px]:text-[13px] min-[480px]:px-1.5 min-[480px]:text-sm sm:text-base hover:bg-white/15 focus:bg-transparent focus-visible:bg-white/15 data-active:bg-white/20 data-active:hover:bg-white/25 data-active:focus:bg-transparent data-active:focus-visible:bg-white/25 data-popup-open:bg-white/15 data-popup-open:hover:bg-white/15 data-popup-open:focus:bg-white/15 data-open:bg-white/15 data-open:hover:bg-white/15 data-open:focus:bg-white/15',
+  'h-auto rounded-full px-0.5 py-0.5 text-xs font-normal min-[360px]:px-1 min-[360px]:text-[13px] min-[480px]:px-1.5 min-[480px]:text-sm sm:text-base',
+  'bg-transparent hover:bg-white/15 focus:bg-white/15 focus-visible:bg-white/15',
+  'data-active:bg-white/25 data-active:hover:bg-white/30 data-active:focus:bg-white/25 data-active:focus-visible:bg-white/25',
+  'data-popup-open:bg-white/15 data-popup-open:hover:bg-white/20 data-popup-open:focus:bg-white/15',
+  'data-open:bg-white/15 data-open:hover:bg-white/20 data-open:focus:bg-white/15',
+  'active:scale-[0.97] motion-reduce:active:scale-100',
 );
+
+const navPillClass =
+  'rounded-full bg-black/50 text-white shadow-lg ring-1 ring-white/15 backdrop-blur-2xl backdrop-saturate-150';
+
+const navPillPositionClass =
+  'fixed inset-x-2 z-[60] mx-auto w-fit max-w-[calc(100vw-1rem)] bottom-[max(1rem,env(safe-area-inset-bottom))] min-[480px]:inset-x-4 min-[480px]:max-w-[calc(100vw-2rem)]';
+
+function DesktopSiteNav({ activeHref }: { activeHref: string }) {
+  const socialsMenuRef = useRef<NavigationMenuRootActions | null>(null);
+
+  return (
+    <NavigationMenu
+      side="top"
+      align="end"
+      actionsRef={socialsMenuRef}
+      className={cn(
+        navPillPositionClass,
+        navPillClass,
+        'flex-none justify-center p-0.5 min-[480px]:p-1',
+      )}
+    >
+      <NavigationMenuList className="gap-0 min-[360px]:gap-0.5">
+        {MENU.map((item) => (
+          <NavigationMenuItem key={item.label}>
+            <NavigationMenuLink
+              href={item.href}
+              active={item.href === activeHref}
+              closeOnClick
+              onMouseEnter={() => {
+                socialsMenuRef.current?.close();
+                if (document.activeElement instanceof HTMLElement) {
+                  document.activeElement.blur();
+                }
+              }}
+              className={navItemClass}
+            >
+              {item.label}
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        ))}
+        <NavigationMenuItem>
+          <NavigationMenuTrigger className={navItemClass}>Socials</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-44 gap-0.5">
+              {SOCIALS.map(({ label, href, icon: Icon }) => (
+                <li key={label}>
+                  <NavigationMenuLink
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    closeOnClick
+                    className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm leading-none"
+                  >
+                    <Icon className="size-4 shrink-0" />
+                    <span>{label}</span>
+                  </NavigationMenuLink>
+                </li>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  );
+}
+
+function MobileSiteNav({ activeHref }: { activeHref: string }) {
+  const [open, setOpen] = useState(false);
+  const activeLabel = MENU.find((item) => item.href === activeHref)?.label ?? 'Mission';
+
+  return (
+    <>
+      {/* Stays fixed above the drawer — not a child of DrawerContent, so it never moves with the sheet. */}
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="site-nav-drawer"
+        aria-label={open ? 'Close navigation' : `Open navigation, current page ${activeLabel}`}
+        onClick={() => setOpen((value) => !value)}
+        className={cn(
+          navPillClass,
+          'pointer-events-auto fixed inset-x-2 z-[60] bottom-[max(1rem,env(safe-area-inset-bottom))] flex w-auto items-center justify-between gap-3 px-4 py-2.5 text-sm font-medium outline-none transition-[background-color,transform] duration-[var(--duration-press)] ease-[var(--ease-out)] hover:bg-black/60 focus-visible:ring-3 focus-visible:ring-white/40 active:scale-[0.99] motion-reduce:active:scale-100 min-[480px]:inset-x-4',
+        )}
+      >
+        <span>{activeLabel}</span>
+        {open ? <X className="size-4 shrink-0" aria-hidden /> : <Menu className="size-4 shrink-0" aria-hidden />}
+      </button>
+
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent
+          id="site-nav-drawer"
+          className={cn(
+            'z-50 gap-0 border-white/10 bg-neutral-950/90 text-white backdrop-blur-2xl backdrop-saturate-150',
+            'pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))]',
+            '[&>div:first-child]:bg-white/25',
+          )}
+        >
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>Navigate</DrawerTitle>
+          </DrawerHeader>
+          <DrawerBody className="px-3 pt-1 pb-2">
+            <nav aria-label="Site">
+              <ul className="flex flex-col gap-0.5">
+                {MENU.map((item) => {
+                  const active = item.href === activeHref;
+                  return (
+                    <li key={item.label}>
+                      <a
+                        href={item.href}
+                        aria-current={active ? 'page' : undefined}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          'flex min-h-11 items-center rounded-xl px-3 text-base font-medium outline-none transition-[background-color,transform] duration-[var(--duration-press)] ease-[var(--ease-out)] focus-visible:ring-3 focus-visible:ring-white/40 active:scale-[0.99] motion-reduce:active:scale-100',
+                          active ? 'bg-white/20' : 'hover:bg-white/10',
+                        )}
+                      >
+                        {item.label}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <p className="mt-4 mb-1 px-3 text-xs font-medium tracking-wide text-white/50 uppercase">
+                Socials
+              </p>
+              <ul className="flex flex-col gap-0.5">
+                {SOCIALS.map(({ label, href, icon: Icon }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => setOpen(false)}
+                      className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-base font-medium outline-none transition-[background-color,transform] duration-[var(--duration-press)] ease-[var(--ease-out)] hover:bg-white/10 focus-visible:ring-3 focus-visible:ring-white/40 active:scale-[0.99] motion-reduce:active:scale-100"
+                    >
+                      <Icon className="size-4 shrink-0 opacity-80" />
+                      <span>{label}</span>
+                      <ArrowUpRight className="ml-auto size-3.5 opacity-40" aria-hidden />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+}
+
+function SiteNav({ activeHref }: { activeHref: string }) {
+  const isDesktop = useMediaQuery('(min-width: 48rem)');
+  return isDesktop ? <DesktopSiteNav activeHref={activeHref} /> : <MobileSiteNav activeHref={activeHref} />;
+}
 
 const ANNOUNCEMENTS: { text: string; href?: string }[] = [
   { text: 'Funding required - see mission' },
@@ -421,7 +589,6 @@ export function Home() {
   const activeHref = ['#skill-tree', '#projects', '#articles', '#faq'].includes(sectionHref)
     ? sectionHref
     : '#mission';
-  const socialsMenuRef = useRef<NavigationMenuRootActions | null>(null);
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden">
@@ -431,7 +598,7 @@ export function Home() {
         className={cn(
           'relative grid min-h-0 flex-1 grid-cols-5 grid-rows-[auto_1fr_auto] gap-x-6 p-4 md:px-6 md:pt-6',
           activeHref === '#mission' ? 'pb-24' : 'pb-4 md:pb-6',
-          activeHref === '#mission' && 'mobile-portrait:grid-rows-[0.5fr_auto_auto_1.5fr]',
+          activeHref === '#mission' && 'mobile-portrait:grid-rows-[1fr_auto_auto_1fr]',
         )}
       >
         {activeHref === '#skill-tree' ? (
@@ -463,57 +630,7 @@ export function Home() {
         )}
       </main>
 
-      <NavigationMenu
-        side="top"
-        align="end"
-        actionsRef={socialsMenuRef}
-        className={cn(
-          'fixed inset-x-2 z-50 mx-auto w-fit max-w-[calc(100vw-1rem)] flex-none justify-center rounded-full bg-black/50 p-0.5 text-white shadow-lg ring-1 ring-white/15 backdrop-blur-2xl backdrop-saturate-150 min-[480px]:inset-x-4 min-[480px]:max-w-[calc(100vw-2rem)] min-[480px]:p-1',
-          'bottom-[max(1rem,env(safe-area-inset-bottom))]',
-        )}
-      >
-        <NavigationMenuList className="gap-0 min-[360px]:gap-0.5">
-          {MENU.map((item) => (
-            <NavigationMenuItem key={item.label}>
-              <NavigationMenuLink
-                href={item.href}
-                active={item.href === activeHref}
-                closeOnClick
-                onMouseEnter={() => {
-                  socialsMenuRef.current?.close();
-                  if (document.activeElement instanceof HTMLElement) {
-                    document.activeElement.blur();
-                  }
-                }}
-                className={navItemClass}
-              >
-                {item.label}
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          ))}
-          <NavigationMenuItem>
-            <NavigationMenuTrigger className={navItemClass}>Socials</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-44 gap-0.5">
-                {SOCIALS.map(({ label, href, icon: Icon }) => (
-                  <li key={label}>
-                    <NavigationMenuLink
-                      href={href}
-                      target="_blank"
-                      rel="noreferrer"
-                      closeOnClick
-                      className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-sm leading-none"
-                    >
-                      <Icon className="size-4 shrink-0" />
-                      <span>{label}</span>
-                    </NavigationMenuLink>
-                  </li>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+      <SiteNav activeHref={activeHref} />
     </div>
   );
 }
